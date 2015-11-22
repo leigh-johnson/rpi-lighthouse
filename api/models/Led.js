@@ -8,7 +8,16 @@
 module.exports = {
 
   attributes: {
-
+    color: {
+        type: 'array'
+    },
+    position: {
+        type: 'integer'
+    },
+    profiles: {
+        type: 'collection',
+        via: 'leds'
+    }
   }
 };
 

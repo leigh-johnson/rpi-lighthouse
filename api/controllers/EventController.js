@@ -1,7 +1,7 @@
 /**
- * AlarmController
+ * EventController
  *
- * @description :: Server-side logic for managing alarms
+ * @description :: Server-side logic for managing events
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 

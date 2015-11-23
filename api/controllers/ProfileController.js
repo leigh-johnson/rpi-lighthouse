@@ -1,7 +1,7 @@
 /**
  * ProfileController
  *
- * @description :: Server-side logic for managing profiles
+ * @description :: Server-side logic for managing Profiles
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
@@ -10,11 +10,31 @@ module.exports = {
 
 
   /**
-   * `ProfileController.schedule()`
+   * `ProfileController.create()`
    */
-  schedule: function (req, res) {
+  create: function (req, res) {
     return res.json({
-      todo: 'schedule() is not implemented yet!'
+      todo: 'create() is not implemented yet!'
+    });
+  },
+
+
+  /**
+   * `ProfileController.update()`
+   */
+  update: function (req, res) {
+    return res.json({
+      todo: 'update() is not implemented yet!'
+    });
+  },
+
+
+  /**
+   * `ProfileController.destroy()`
+   */
+  destroy: function (req, res) {
+    return res.json({
+      todo: 'destroy() is not implemented yet!'
     });
   }
 };

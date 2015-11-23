@@ -16,6 +16,9 @@ module.exports = {
     },
     time: {
         type: 'dateTime'
+    },
+    scheduledEvent: {
+        model: 'schedule'
     }
   }
 };

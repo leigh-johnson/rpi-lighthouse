@@ -10,11 +10,13 @@ module.exports = {
   attributes: {
     name: {
         type: 'string'
-    },
+    }
+    /*
     events: {
         collection: 'event',
         via: 'scheduledEvent'
     }
+    */
   }
 };
 

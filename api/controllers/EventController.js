@@ -1,41 +1,26 @@
 /**
  * EventController
  *
- * @description :: Server-side logic for managing Events
+ * @description :: Server-side logic for managing Eventes
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
 module.exports = {
-	
-
-
-  /**
-   * `EventController.create()`
-   */
-  create: function (req, res) {
-    return res.json({
-      todo: 'create() is not implemented yet!'
-    });
-  },
-
-
-  /**
-   * `EventController.update()`
-   */
-  update: function (req, res) {
-    return res.json({
-      todo: 'update() is not implemented yet!'
-    });
-  },
-
-
-  /**
-   * `EventController.destroy()`
-   */
-  destroy: function (req, res) {
-    return res.json({
-      todo: 'destroy() is not implemented yet!'
-    });
-  }
+    getEvents: function(req, res) {
+        EventService.getEvents(function(events) {
+            res.json(events);
+        });
+    },
+    addEvent: function(req, res) {
+        var eventVal = (req.body.value) ? req.body.value : undefined
+        EventService.addEvent(eventVal, function(success) {
+            res.json(success);
+        });
+    },
+    removeEvent: function(req, res) {
+       var eventVal = (req.body.value) ? req.body.value : undefined
+        EventService.removeEvent(eventVal, function(success) {
+            res.json(success);
+        });
+    }
 };
-

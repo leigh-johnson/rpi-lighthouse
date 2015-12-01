@@ -33,7 +33,11 @@ module.exports.routes = {
   ***************************************************************************/
 
   '/': {
-    view: 'homepage'
+    //view: 'partials/schedule'
+     view: 'partials/calendar'   
+  },
+  '/schedule/new' : {
+    view: 'partials/event'
   }
 
   /***************************************************************************

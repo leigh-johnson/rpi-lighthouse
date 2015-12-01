@@ -32,14 +32,16 @@ var jsFilesToInject = [
 
   // We'll use grunt-browserify to wrap dependency modules
   // tasks/config/grunt-browersify.js
+  'js/bundle.js',
 
   // All of the rest of your client-side js files
   // will be injected here in no particular order.
-  'js/**/*.js',
+  //'js/**/*.js',
 
   // Use the "exclude" operator to ignore files
   // Source of bundle.js
-  // '!js/main.js'
+   '!js/main.js ',
+   '!js/app.js'
 ];
 
 

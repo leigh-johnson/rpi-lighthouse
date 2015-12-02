@@ -26,18 +26,26 @@ eventApp.config(['$routeProvider',
   }]);
 
 require('fullcalendar');
-// /require('gcal');
+require('./dependencies/gcal');
+
 var CalendarController = require('./controllers/CalendarController');
+var CalendarService = require('./services/CalendarService');
 var calendarApp = angular.module('calendarApp', ['ui.calendar', 'ui.bootstrap'])
-    .controller('CalendarCtrl', CalendarController);
-},{"./controllers/CalendarController":2,"./controllers/EventController":3,"./services/EventService":5,"angular":12,"angular-route":7,"angular-ui-bootstrap":8,"angular-ui-calendar":10,"fullcalendar":14}],2:[function(require,module,exports){
-var CalendarController =   function($scope, $compile, $timeout, uiCalendarConfig) {
+    .controller('CalendarCtrl', CalendarController)
+    .service('CalendarService', CalendarService);
+},{"./controllers/CalendarController":2,"./controllers/EventController":3,"./dependencies/gcal":4,"./services/CalendarService":6,"./services/EventService":7,"angular":14,"angular-route":9,"angular-ui-bootstrap":10,"angular-ui-calendar":12,"fullcalendar":16}],2:[function(require,module,exports){
+var CalendarController =   function($scope, $compile, $timeout, uiCalendarConfig, CalendarService) {
     var date = new Date();
     var d = date.getDate();
     var m = date.getMonth();
     var y = date.getFullYear();
 
-    $scope.changeTo = 'Hungarian';
+    // toggle Google Calendar sync
+    $scope.toggleGcal = function(){
+        $scope.syncGcal = $scope.syncGcal === true ? false : true;
+        console.log($scope.syncGcal);
+    }
+    //$scope.changeTo = 'Hungarian';
     /* event source that pulls from google.com */
     $scope.eventSource = {
             url: "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/basic",
@@ -140,21 +148,13 @@ var CalendarController =   function($scope, $compile, $timeout, uiCalendarConfig
         eventClick: $scope.alertOnEventClick,
         eventDrop: $scope.alertOnDrop,
         eventResize: $scope.alertOnResize,
-        eventRender: $scope.eventRender
+        eventRender: $scope.eventRender,
+        dayClick: function(e){
+          console.log($(this))
+        }
       }
     };
 
-    $scope.changeLang = function() {
-      if($scope.changeTo === 'Hungarian'){
-        $scope.uiConfig.calendar.dayNames = ["Vasárnap", "Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat"];
-        $scope.uiConfig.calendar.dayNamesShort = ["Vas", "Hét", "Kedd", "Sze", "Csüt", "Pén", "Szo"];
-        $scope.changeTo= 'English';
-      } else {
-        $scope.uiConfig.calendar.dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-        $scope.uiConfig.calendar.dayNamesShort = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-        $scope.changeTo = 'Hungarian';
-      }
-    };
     /* event sources array*/
     $scope.eventSources = [$scope.events, $scope.eventSource, $scope.eventsF];
     $scope.eventSources2 = [$scope.calEventsExt, $scope.eventsF, $scope.events];
@@ -184,12 +184,228 @@ var EventController = function($scope, $rootScope, EventService) {
 };
 module.exports = EventController;
 },{}],4:[function(require,module,exports){
-var jquery = require('jquery');
-window.jQuery = jquery;
+/*!
+ * FullCalendar v2.5.0 Google Calendar Plugin
+ * Docs & License: http://fullcalendar.io/
+ * (c) 2015 Adam Shaw
+ */
+ 
+(function(factory) {
+    if (typeof define === 'function' && define.amd) {
+        define([ 'jquery' ], factory);
+    }
+    else if (typeof exports === 'object') { // Node/CommonJS
+        module.exports = factory(require('jquery'));
+    }
+    else {
+        factory(jQuery);
+    }
+})(function($) {
+
+
+var API_BASE = 'https://www.googleapis.com/calendar/v3/calendars';
+var FC = $.fullCalendar;
+var applyAll = FC.applyAll;
+
+
+FC.sourceNormalizers.push(function(sourceOptions) {
+    var googleCalendarId = sourceOptions.googleCalendarId;
+    var url = sourceOptions.url;
+    var match;
+
+    // if the Google Calendar ID hasn't been explicitly defined
+    if (!googleCalendarId && url) {
+
+        // detect if the ID was specified as a single string.
+        // will match calendars like "asdf1234@calendar.google.com" in addition to person email calendars.
+        if (/^[^\/]+@([^\/\.]+\.)*(google|googlemail|gmail)\.com$/.test(url)) {
+            googleCalendarId = url;
+        }
+        // try to scrape it out of a V1 or V3 API feed URL
+        else if (
+            (match = /^https:\/\/www.googleapis.com\/calendar\/v3\/calendars\/([^\/]*)/.exec(url)) ||
+            (match = /^https?:\/\/www.google.com\/calendar\/feeds\/([^\/]*)/.exec(url))
+        ) {
+            googleCalendarId = decodeURIComponent(match[1]);
+        }
+
+        if (googleCalendarId) {
+            sourceOptions.googleCalendarId = googleCalendarId;
+        }
+    }
+
+
+    if (googleCalendarId) { // is this a Google Calendar?
+
+        // make each Google Calendar source uneditable by default
+        if (sourceOptions.editable == null) {
+            sourceOptions.editable = false;
+        }
+
+        // We want removeEventSource to work, but it won't know about the googleCalendarId primitive.
+        // Shoehorn it into the url, which will function as the unique primitive. Won't cause side effects.
+        // This hack is obsolete since 2.2.3, but keep it so this plugin file is compatible with old versions.
+        sourceOptions.url = googleCalendarId;
+    }
+});
+
+
+FC.sourceFetchers.push(function(sourceOptions, start, end, timezone) {
+    if (sourceOptions.googleCalendarId) {
+        return transformOptions(sourceOptions, start, end, timezone, this); // `this` is the calendar
+    }
+});
+
+
+function transformOptions(sourceOptions, start, end, timezone, calendar) {
+    var url = API_BASE + '/' + encodeURIComponent(sourceOptions.googleCalendarId) + '/events?callback=?'; // jsonp
+    var apiKey = sourceOptions.googleCalendarApiKey || calendar.options.googleCalendarApiKey;
+    var success = sourceOptions.success;
+    var data;
+    var timezoneArg; // populated when a specific timezone. escaped to Google's liking
+
+    function reportError(message, apiErrorObjs) {
+        var errorObjs = apiErrorObjs || [ { message: message } ]; // to be passed into error handlers
+
+        // call error handlers
+        (sourceOptions.googleCalendarError || $.noop).apply(calendar, errorObjs);
+        (calendar.options.googleCalendarError || $.noop).apply(calendar, errorObjs);
+
+        // print error to debug console
+        FC.warn.apply(null, [ message ].concat(apiErrorObjs || []));
+    }
+
+    if (!apiKey) {
+        reportError("Specify a googleCalendarApiKey. See http://fullcalendar.io/docs/google_calendar/");
+        return {}; // an empty source to use instead. won't fetch anything.
+    }
+
+    // The API expects an ISO8601 datetime with a time and timezone part.
+    // Since the calendar's timezone offset isn't always known, request the date in UTC and pad it by a day on each
+    // side, guaranteeing we will receive all events in the desired range, albeit a superset.
+    // .utc() will set a zone and give it a 00:00:00 time.
+    if (!start.hasZone()) {
+        start = start.clone().utc().add(-1, 'day');
+    }
+    if (!end.hasZone()) {
+        end = end.clone().utc().add(1, 'day');
+    }
+
+    // when sending timezone names to Google, only accepts underscores, not spaces
+    if (timezone && timezone != 'local') {
+        timezoneArg = timezone.replace(' ', '_');
+    }
+
+    data = $.extend({}, sourceOptions.data || {}, {
+        key: apiKey,
+        timeMin: start.format(),
+        timeMax: end.format(),
+        timeZone: timezoneArg,
+        singleEvents: true,
+        maxResults: 9999
+    });
+
+    return $.extend({}, sourceOptions, {
+        googleCalendarId: null, // prevents source-normalizing from happening again
+        url: url,
+        data: data,
+        startParam: false, // `false` omits this parameter. we already included it above
+        endParam: false, // same
+        timezoneParam: false, // same
+        success: function(data) {
+            var events = [];
+            var successArgs;
+            var successRes;
+
+            if (data.error) {
+                reportError('Google Calendar API: ' + data.error.message, data.error.errors);
+            }
+            else if (data.items) {
+                $.each(data.items, function(i, entry) {
+                    var url = entry.htmlLink;
+
+                    // make the URLs for each event show times in the correct timezone
+                    if (timezoneArg) {
+                        url = injectQsComponent(url, 'ctz=' + timezoneArg);
+                    }
+
+                    events.push({
+                        id: entry.id,
+                        title: entry.summary,
+                        start: entry.start.dateTime || entry.start.date, // try timed. will fall back to all-day
+                        end: entry.end.dateTime || entry.end.date, // same
+                        url: url,
+                        location: entry.location,
+                        description: entry.description
+                    });
+                });
+
+                // call the success handler(s) and allow it to return a new events array
+                successArgs = [ events ].concat(Array.prototype.slice.call(arguments, 1)); // forward other jq args
+                successRes = applyAll(success, this, successArgs);
+                if ($.isArray(successRes)) {
+                    return successRes;
+                }
+            }
+
+            return events;
+        }
+    });
+}
+
+
+// Injects a string like "arg=value" into the querystring of a URL
+function injectQsComponent(url, component) {
+    // inject it after the querystring but before the fragment
+    return url.replace(/(\?.*?)?(#|$)/, function(whole, qs, hash) {
+        return (qs ? qs + '&' : '?') + component + hash;
+    });
+}
+
+
+});
+
+},{"jquery":18}],5:[function(require,module,exports){
+var $ = require('jquery');
+window.jQuery = $;
+window.$ = $;
 var bootstrap = require('bootstrap-sass');
 var moment = require('moment');
 window.moment = moment;
-},{"bootstrap-sass":13,"jquery":16,"moment":17}],5:[function(require,module,exports){
+},{"bootstrap-sass":15,"jquery":18,"moment":19}],6:[function(require,module,exports){
+var CalendarService = function($http, $q){
+    return {
+        'getCalendars': function(){
+            var defer = $q.defer();
+            $http.get('/calendar/getCalendars').success(function(res){
+                defer.resolve(res);
+            }).error( function(err){
+                defer.reject(err);
+            });
+            return defer.promise;
+        },
+        'addCalendar': function(calendar){
+            var defer = $q.defer();
+            $http.post('/calendar/addCalendar', calendar).success(function(res){
+                defer.resolve(res);
+            }).error( function(err){
+                defer.reject(err);
+            });
+            return defer.promise;
+        },
+        'removeCalendar': function(event){
+            var defer = $q.defer();
+            $http.post('/calendar/removeCalendar', calendar).success(function(res){
+                defer.resolve(res);
+            }).error( function(err){
+                defer.reject(err);
+            });
+            return defer.promise
+        }
+    }
+};
+module.exports = CalendarService;
+},{}],7:[function(require,module,exports){
 var EventService = function($http, $q) {
     return {
       'getEvents': function() {
@@ -222,7 +438,7 @@ var EventService = function($http, $q) {
   }
 };
 module.exports = EventService;
-},{}],6:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /**
  * @license AngularJS v1.4.8
  * (c) 2010-2015 Google, Inc. http://angularjs.org
@@ -1215,15 +1431,15 @@ function ngViewFillContentFactory($compile, $controller, $route) {
 
 })(window, window.angular);
 
-},{}],7:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 require('./angular-route');
 module.exports = 'ngRoute';
 
-},{"./angular-route":6}],8:[function(require,module,exports){
+},{"./angular-route":8}],10:[function(require,module,exports){
 require('./ui-bootstrap-tpls');
 module.exports = 'ui.bootstrap';
 
-},{"./ui-bootstrap-tpls":9}],9:[function(require,module,exports){
+},{"./ui-bootstrap-tpls":11}],11:[function(require,module,exports){
 /*
  * angular-ui-bootstrap
  * http://angular-ui.github.io/bootstrap/
@@ -9727,7 +9943,7 @@ angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCac
     "");
 }]);
 !angular.$$csp() && angular.element(document).find('head').prepend('<style type="text/css">.ng-animate.item:not(.left):not(.right){-webkit-transition:0s ease-in-out left;transition:0s ease-in-out left}</style>');
-},{}],10:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 /*
 *  AngularJs Fullcalendar Wrapper for the JQuery FullCalendar
 *  API @ http://arshaw.com/fullcalendar/
@@ -10071,7 +10287,7 @@ angular.module('ui.calendar', [])
     };
 }]);
 
-},{}],11:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 /**
  * @license AngularJS v1.4.8
  * (c) 2010-2015 Google, Inc. http://angularjs.org
@@ -39090,11 +39306,11 @@ $provide.value("$locale", {
 })(window, document);
 
 !window.angular.$$csp().noInlineStyle && window.angular.element(document.head).prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style>');
-},{}],12:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 require('./angular');
 module.exports = angular;
 
-},{"./angular":11}],13:[function(require,module,exports){
+},{"./angular":13}],15:[function(require,module,exports){
 /*!
  * Bootstrap v3.3.6 (http://getbootstrap.com)
  * Copyright 2011-2015 Twitter, Inc.
@@ -41459,7 +41675,7 @@ if (typeof jQuery === 'undefined') {
 
 }(jQuery);
 
-},{}],14:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 /*!
  * FullCalendar v2.5.0
  * Docs & License: http://fullcalendar.io/
@@ -52958,7 +53174,7 @@ fcViews.agendaWeek = {
 
 return FC; // export for Node/CommonJS
 });
-},{"jquery":16,"moment":15}],15:[function(require,module,exports){
+},{"jquery":18,"moment":17}],17:[function(require,module,exports){
 //! moment.js
 //! version : 2.10.6
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -56154,7 +56370,7 @@ return FC; // export for Node/CommonJS
     return _moment;
 
 }));
-},{}],16:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.1.4
  * http://jquery.com/
@@ -65366,6 +65582,6 @@ return jQuery;
 
 }));
 
-},{}],17:[function(require,module,exports){
-arguments[4][15][0].apply(exports,arguments)
-},{"dup":15}]},{},[4,1]);
+},{}],19:[function(require,module,exports){
+arguments[4][17][0].apply(exports,arguments)
+},{"dup":17}]},{},[5,1]);

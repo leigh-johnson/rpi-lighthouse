@@ -1,5 +1,6 @@
-var jquery = require('jquery');
-window.jQuery = jquery;
+var $ = require('jquery');
+window.jQuery = $;
+window.$ = $;
 var bootstrap = require('bootstrap-sass');
 var moment = require('moment');
 window.moment = moment;

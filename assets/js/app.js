@@ -25,7 +25,10 @@ eventApp.config(['$routeProvider',
   }]);
 
 require('fullcalendar');
-// /require('gcal');
+require('./dependencies/gcal');
+
 var CalendarController = require('./controllers/CalendarController');
+var CalendarService = require('./services/CalendarService');
 var calendarApp = angular.module('calendarApp', ['ui.calendar', 'ui.bootstrap'])
-    .controller('CalendarCtrl', CalendarController);
+    .controller('CalendarCtrl', CalendarController)
+    .service('CalendarService', CalendarService);

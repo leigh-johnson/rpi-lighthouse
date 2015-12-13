@@ -1,11 +1,10 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var mp = {};
 require('angular');
 require('angular-route');
 require('angular-ui-bootstrap');
 require('angular-ui-calendar');
-require('angular-color-picker');
-
-console.log(mp.colorPicker);
+mp.colorPicker = require('angular-color-picker');
 
 'use strict';
 
@@ -36,13 +35,13 @@ var calendarApp = angular.module('calendarApp', ['ui.calendar', 'ui.bootstrap'])
     .controller('CalendarCtrl', CalendarController)
     .service('CalendarService', CalendarService);
 
-var StrandEvent = reuiqre('./services/EventService');
+var StrandService = require('./services/StrandService');
 var StrandController = require('./controllers/StrandController');
 
-var strandApp = angular.module('strandApp', ['ngRoute', 'ui.bootstrap'])
-    .service('StrandService', EventService)
+var strandApp = angular.module('strandApp', ['ngRoute', 'ui.bootstrap', 'mp.colorPicker'])
+    .service('StrandService', StrandService)
     .controller('StrandCtrl', ['$scope', '$rootScope', 'StrandService', StrandController]);
-},{"./controllers/CalendarController":2,"./controllers/EventController":3,"./controllers/StrandController":4,"./dependencies/gcal":5,"./services/CalendarService":7,"./services/EventService":8,"angular":16,"angular-color-picker":9,"angular-route":11,"angular-ui-bootstrap":12,"angular-ui-calendar":14,"fullcalendar":18}],2:[function(require,module,exports){
+},{"./controllers/CalendarController":2,"./controllers/EventController":3,"./controllers/StrandController":4,"./dependencies/gcal":5,"./services/CalendarService":7,"./services/EventService":8,"./services/StrandService":9,"angular":17,"angular-color-picker":10,"angular-route":12,"angular-ui-bootstrap":13,"angular-ui-calendar":15,"fullcalendar":19}],2:[function(require,module,exports){
 var CalendarController =   function($scope, $compile, $timeout, uiCalendarConfig, CalendarService) {
     var date = new Date();
     var d = date.getDate();
@@ -196,12 +195,15 @@ module.exports = EventController;
 var StrandController = function($scope, $rootScope, StrandService){
  $scope.strands = [];
  $scope.activeStrand = {};
+ $scope.editStrand = {};
+ $scope.editStrand.pattern = 'solid';
 
  StrandService.getStrands().then(function(res){
     $scope.strands = res;
  });
  StrandService.getActiveStrand().then(function(res){
     $scope.activeStrand = res;
+    console.log(typeof $scope.activeStrand)
  });
  $scope.addStrand = function(strand){
   StrandService.addStrand(strand).then(function(res){
@@ -400,14 +402,14 @@ function injectQsComponent(url, component) {
 
 });
 
-},{"jquery":20}],6:[function(require,module,exports){
+},{"jquery":21}],6:[function(require,module,exports){
 var $ = require('jquery');
 window.jQuery = $;
 window.$ = $;
 var bootstrap = require('bootstrap-sass');
 var moment = require('moment');
 window.moment = moment;
-},{"bootstrap-sass":17,"jquery":20,"moment":21}],7:[function(require,module,exports){
+},{"bootstrap-sass":18,"jquery":21,"moment":22}],7:[function(require,module,exports){
 var CalendarService = function($http, $q){
     return {
         'getCalendars': function(){
@@ -474,6 +476,33 @@ var EventService = function($http, $q) {
 };
 module.exports = EventService;
 },{}],9:[function(require,module,exports){
+var StrandService = function($http, $q){
+  return {
+    'getStrands': function(){
+      var defer = $q.defer();
+      $http.get('/strand/getStrands').success(function(res){
+        defer.resolve(res);
+      }).error(function(err){
+        defer.reject(err);
+      });
+      return defer.promise
+    },
+    'addStrand': function($http, $q){},
+    'removeStrand': function($http, $q){},
+    'getActiveStrand': function(){
+      var defer = $q.defer();
+      $http.get('/strand/getActiveStrand').success(function(res){
+        defer.resolve(res);
+      }).error(function(err){
+        defer.reject(err);
+      });
+      return defer.promise
+    },
+    'setActiveStrand': function($http, $q){}
+  }
+};
+module.exports = StrandService;
+},{}],10:[function(require,module,exports){
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         define([ 'module', 'angular' ], function (module, angular) {
@@ -725,7 +754,7 @@ module.exports = EventService;
     }]);
 }));
 
-},{"angular":16}],10:[function(require,module,exports){
+},{"angular":17}],11:[function(require,module,exports){
 /**
  * @license AngularJS v1.4.8
  * (c) 2010-2015 Google, Inc. http://angularjs.org
@@ -1718,15 +1747,15 @@ function ngViewFillContentFactory($compile, $controller, $route) {
 
 })(window, window.angular);
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 require('./angular-route');
 module.exports = 'ngRoute';
 
-},{"./angular-route":10}],12:[function(require,module,exports){
+},{"./angular-route":11}],13:[function(require,module,exports){
 require('./ui-bootstrap-tpls');
 module.exports = 'ui.bootstrap';
 
-},{"./ui-bootstrap-tpls":13}],13:[function(require,module,exports){
+},{"./ui-bootstrap-tpls":14}],14:[function(require,module,exports){
 /*
  * angular-ui-bootstrap
  * http://angular-ui.github.io/bootstrap/
@@ -10230,7 +10259,7 @@ angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCac
     "");
 }]);
 !angular.$$csp() && angular.element(document).find('head').prepend('<style type="text/css">.ng-animate.item:not(.left):not(.right){-webkit-transition:0s ease-in-out left;transition:0s ease-in-out left}</style>');
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /*
 *  AngularJs Fullcalendar Wrapper for the JQuery FullCalendar
 *  API @ http://arshaw.com/fullcalendar/
@@ -10574,7 +10603,7 @@ angular.module('ui.calendar', [])
     };
 }]);
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 /**
  * @license AngularJS v1.4.8
  * (c) 2010-2015 Google, Inc. http://angularjs.org
@@ -39593,11 +39622,11 @@ $provide.value("$locale", {
 })(window, document);
 
 !window.angular.$$csp().noInlineStyle && window.angular.element(document.head).prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style>');
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 require('./angular');
 module.exports = angular;
 
-},{"./angular":15}],17:[function(require,module,exports){
+},{"./angular":16}],18:[function(require,module,exports){
 /*!
  * Bootstrap v3.3.6 (http://getbootstrap.com)
  * Copyright 2011-2015 Twitter, Inc.
@@ -41962,7 +41991,7 @@ if (typeof jQuery === 'undefined') {
 
 }(jQuery);
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 /*!
  * FullCalendar v2.5.0
  * Docs & License: http://fullcalendar.io/
@@ -53461,7 +53490,7 @@ fcViews.agendaWeek = {
 
 return FC; // export for Node/CommonJS
 });
-},{"jquery":20,"moment":19}],19:[function(require,module,exports){
+},{"jquery":21,"moment":20}],20:[function(require,module,exports){
 //! moment.js
 //! version : 2.10.6
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -56657,7 +56686,7 @@ return FC; // export for Node/CommonJS
     return _moment;
 
 }));
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.1.4
  * http://jquery.com/
@@ -65869,6 +65898,6 @@ return jQuery;
 
 }));
 
-},{}],21:[function(require,module,exports){
-arguments[4][19][0].apply(exports,arguments)
-},{"dup":19}]},{},[6,1]);
+},{}],22:[function(require,module,exports){
+arguments[4][20][0].apply(exports,arguments)
+},{"dup":20}]},{},[6,1]);

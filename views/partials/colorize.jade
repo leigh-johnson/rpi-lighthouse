@@ -4,4 +4,38 @@ append css
   link(rel="stylesheet" href="/styles/dependencies/angular-color-picker.css")
 block content
   div(ng-app='strandApp')
-    .container(ng-controller='strandCtrl')
+    .container(ng-controller='StrandCtrl')
+      .alert.alert-info(ng-show="activeStrand == {}")
+        | No strand pattern is active yet!
+      .panel
+        .row
+          h1.text-center New Strand Pattern
+        .row
+          .col-md-4
+            .row
+              .col-md-12
+                h3 Choose a pattern
+                .btn-group(role="group" ng-model="editStrand.pattern")
+                  button.btn.btn-default(ng-model='editStrand.pattern' uib-btn-radio="'solid'" type='button') Solid
+                  button.btn.btn-default(ng-model='editStrand.pattern' uib-btn-radio="'gradient'" type='button') Gradient
+                  button.btn.btn-default.disabled(ng-model='editStrand.pattern' uib-btn-radio="'rainbow'" type='button' ng-disabled="true==true") Rainbow
+            .row
+              .col-md-10
+                h3 How many LEDs?
+                .input-group
+                  span.input-group-addon: span.fa.fa-lightbulb-o
+                  input.form-control(type="text" ngModel="editStrand.numLEDs")
+          .col-md-4
+            .row
+              h3(ng-show="editStrand.pattern == 'gradient'") Add Color Stop
+              h3(ng-show="editStrand.pattern == 'solid'") Pick a Color
+              color-picker.col-md-11(ng-model="newColor")
+            .row
+              .input-group.col-md-11
+                input.form-control(type="text" ng-model="newColor" ng-init="newColor = '#f7f7f7'")
+                span.input-group-btn: button.btn.btn-primary(type="button"): span.fa.fa-plus
+      .well
+        h1 Saved Strand Patterns
+        .alert.alert-danger(ng-show="strands == []")
+          | No strand patterns have been saved. Create one!
+

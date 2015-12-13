@@ -1,10 +1,9 @@
+var mp = {};
 require('angular');
 require('angular-route');
 require('angular-ui-bootstrap');
 require('angular-ui-calendar');
-require('angular-color-picker');
-
-console.log(mp.colorPicker);
+mp.colorPicker = require('angular-color-picker');
 
 'use strict';
 
@@ -35,9 +34,9 @@ var calendarApp = angular.module('calendarApp', ['ui.calendar', 'ui.bootstrap'])
     .controller('CalendarCtrl', CalendarController)
     .service('CalendarService', CalendarService);
 
-var StrandEvent = reuiqre('./services/EventService');
+var StrandService = require('./services/StrandService');
 var StrandController = require('./controllers/StrandController');
 
-var strandApp = angular.module('strandApp', ['ngRoute', 'ui.bootstrap'])
-    .service('StrandService', EventService)
+var strandApp = angular.module('strandApp', ['ngRoute', 'ui.bootstrap', 'mp.colorPicker'])
+    .service('StrandService', StrandService)
     .controller('StrandCtrl', ['$scope', '$rootScope', 'StrandService', StrandController]);

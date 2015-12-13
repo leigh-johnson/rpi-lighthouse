@@ -1,12 +1,15 @@
 var StrandController = function($scope, $rootScope, StrandService){
  $scope.strands = [];
  $scope.activeStrand = {};
+ $scope.editStrand = {};
+ $scope.editStrand.pattern = 'solid';
 
  StrandService.getStrands().then(function(res){
     $scope.strands = res;
  });
  StrandService.getActiveStrand().then(function(res){
     $scope.activeStrand = res;
+    console.log(typeof $scope.activeStrand)
  });
  $scope.addStrand = function(strand){
   StrandService.addStrand(strand).then(function(res){

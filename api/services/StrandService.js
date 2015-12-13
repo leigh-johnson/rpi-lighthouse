@@ -1,6 +1,6 @@
 module.exports = {
   getStrands: function(next){
-    Event.find().exec(function(err, strands){
+    Strand.find().exec(function(err, strands){
       if(err) throw err;
       next(strands);
     });
@@ -12,7 +12,7 @@ module.exports = {
     });
   },
   removeStrand: function(strandVals, next){
-    Event.destroy(strandVals).exec(function(err, strand){
+    Strand.destroy(strandVals).exec(function(err, strand){
       if (error) throw err;
       next(strand);
     });
@@ -23,7 +23,7 @@ module.exports = {
       next(strand);
     });
   },
-  getActiveStrand: function(strand, next){
+  getActiveStrand: function(next){
     Strand.findOne({active: true}).exec(function(err, strand){
       if (err) throw err;
       next(strand);

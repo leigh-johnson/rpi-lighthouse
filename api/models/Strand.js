@@ -14,7 +14,8 @@ module.exports = {
     },
     pattern: {
       type: 'string',
-      enum: ['gradient', 'solid']
+      enum: ['gradient', 'solid'],
+      defaultsTo: 'solid'
     },
     animation: {
       type: 'string',

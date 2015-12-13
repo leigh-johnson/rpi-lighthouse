@@ -7,31 +7,30 @@
 
 module.exports = {
 	getStrands: function(req, res){
-    EventService.getStrands(function(events){
-      res.json(events);
+    StrandService.getStrands(function(strands){
+      res.json(strands);
     });
   },
   addStrand: function(req, res){
     var strandVals = (req.body) ? req.body : undefined
-    EventService.addStrand(strandVals, function(success){
+    StrandService.addStrand(strandVals, function(success){
       res.json(success);
     });
   },
-  removeEvent: function(req, res){
+  removeStrand: function(req, res){
     var strandVals = (req.body) ? req.body : undefined
-    EventService.removeStrand(strandVals, function(success){
+    StrandService.removeStrand(strandVals, function(success){
       res.json(success);
     });
   },
   setActiveStrand: function(req, res){
     var strand = (req.body) ? req.body.strand : undefined
-    EventService.setActiveStrand(strand, function(success){
+    StrandService.setActiveStrand(strand, function(success){
       res.json(success);
     });
   },
   getActiveStrand: function(req, res){
-    var stand = (req.body) ? req.body.strand : undefined
-    EventService.getActiveStrand(strand, function(success){
+    StrandService.getActiveStrand(function(success){
       res.json(success)
     });
   }

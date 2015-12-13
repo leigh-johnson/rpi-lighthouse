@@ -32,12 +32,15 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
 
-  '/': {
+  '/schedule': {
     //view: 'partials/schedule'
      view: 'partials/calendar'   
   },
   '/schedule/new' : {
     view: 'partials/event'
+  },
+  '/': {
+    view: 'partials/colorize'
   }
 
   /***************************************************************************

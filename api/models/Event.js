@@ -8,10 +8,10 @@
 module.exports = {
   attributes: {
     value: {
-      'type': 'text'
+      type: 'text'
     },
     time: {
-        'type': 'datetime'
+        type: 'datetime'
     }
   }
 };

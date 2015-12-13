@@ -19,7 +19,7 @@ module.exports = {
   },
   setActiveStrand: function(strand, next){
     Strand.update({id: strand.id}, {active: true}).exec(function(err, strand){
-      if err throw err;
+      if (err) throw err;
       next(strand);
     });
   },

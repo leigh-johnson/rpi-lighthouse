@@ -2,7 +2,9 @@ require('angular');
 require('angular-route');
 require('angular-ui-bootstrap');
 require('angular-ui-calendar');
+require('angular-color-picker');
 
+console.log(mp.colorPicker);
 
 'use strict';
 
@@ -34,7 +36,7 @@ var calendarApp = angular.module('calendarApp', ['ui.calendar', 'ui.bootstrap'])
     .service('CalendarService', CalendarService);
 
 var StrandEvent = reuiqre('./services/EventService');
-var StrandController = require('/controller/StrandController');
+var StrandController = require('./controllers/StrandController');
 
 var strandApp = angular.module('strandApp', ['ngRoute', 'ui.bootstrap'])
     .service('StrandService', EventService)

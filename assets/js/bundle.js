@@ -3,7 +3,9 @@ require('angular');
 require('angular-route');
 require('angular-ui-bootstrap');
 require('angular-ui-calendar');
+require('angular-color-picker');
 
+console.log(mp.colorPicker);
 
 'use strict';
 
@@ -33,7 +35,14 @@ var CalendarService = require('./services/CalendarService');
 var calendarApp = angular.module('calendarApp', ['ui.calendar', 'ui.bootstrap'])
     .controller('CalendarCtrl', CalendarController)
     .service('CalendarService', CalendarService);
-},{"./controllers/CalendarController":2,"./controllers/EventController":3,"./dependencies/gcal":4,"./services/CalendarService":6,"./services/EventService":7,"angular":14,"angular-route":9,"angular-ui-bootstrap":10,"angular-ui-calendar":12,"fullcalendar":16}],2:[function(require,module,exports){
+
+var StrandEvent = reuiqre('./services/EventService');
+var StrandController = require('./controllers/StrandController');
+
+var strandApp = angular.module('strandApp', ['ngRoute', 'ui.bootstrap'])
+    .service('StrandService', EventService)
+    .controller('StrandCtrl', ['$scope', '$rootScope', 'StrandService', StrandController]);
+},{"./controllers/CalendarController":2,"./controllers/EventController":3,"./controllers/StrandController":4,"./dependencies/gcal":5,"./services/CalendarService":7,"./services/EventService":8,"angular":16,"angular-color-picker":9,"angular-route":11,"angular-ui-bootstrap":12,"angular-ui-calendar":14,"fullcalendar":18}],2:[function(require,module,exports){
 var CalendarController =   function($scope, $compile, $timeout, uiCalendarConfig, CalendarService) {
     var date = new Date();
     var d = date.getDate();
@@ -184,6 +193,32 @@ var EventController = function($scope, $rootScope, EventService) {
 };
 module.exports = EventController;
 },{}],4:[function(require,module,exports){
+var StrandController = function($scope, $rootScope, StrandService){
+ $scope.strands = [];
+ $scope.activeStrand = {};
+
+ StrandService.getStrands().then(function(res){
+    $scope.strands = res;
+ });
+ StrandService.getActiveStrand().then(function(res){
+    $scope.activeStrand = res;
+ });
+ $scope.addStrand = function(strand){
+  StrandService.addStrand(strand).then(function(res){
+    // push to strands scope
+    // or re-call getStrands()
+    // reset $scope.strand
+  });
+ };
+ $scope.removeStrand = function(){
+  StrandService.removeStrand(strand)(function(res){
+    // splice strand from $scope.strands
+    // or recall getStrands();
+  });
+ };
+};
+module.exports = StrandController;
+},{}],5:[function(require,module,exports){
 /*!
  * FullCalendar v2.5.0 Google Calendar Plugin
  * Docs & License: http://fullcalendar.io/
@@ -365,14 +400,14 @@ function injectQsComponent(url, component) {
 
 });
 
-},{"jquery":18}],5:[function(require,module,exports){
+},{"jquery":20}],6:[function(require,module,exports){
 var $ = require('jquery');
 window.jQuery = $;
 window.$ = $;
 var bootstrap = require('bootstrap-sass');
 var moment = require('moment');
 window.moment = moment;
-},{"bootstrap-sass":15,"jquery":18,"moment":19}],6:[function(require,module,exports){
+},{"bootstrap-sass":17,"jquery":20,"moment":21}],7:[function(require,module,exports){
 var CalendarService = function($http, $q){
     return {
         'getCalendars': function(){
@@ -405,7 +440,7 @@ var CalendarService = function($http, $q){
     }
 };
 module.exports = CalendarService;
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 var EventService = function($http, $q) {
     return {
       'getEvents': function() {
@@ -438,7 +473,259 @@ var EventService = function($http, $q) {
   }
 };
 module.exports = EventService;
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        define([ 'module', 'angular' ], function (module, angular) {
+            module.exports = factory(angular);
+        });
+    } else if (typeof module === 'object') {
+        module.exports = factory(require('angular'));
+    } else {
+        if (!root.mp) {
+            root.mp = {};
+        }
+
+        root.mp.colorPicker = factory(root.angular);
+    }
+}(this, function (angular) {
+    'use strict';
+
+    function hsvToHexRgb(h, s, v) {
+        if (typeof h === 'object') {
+            s = h.s;
+            v = h.v;
+            h = h.h;
+        }
+
+        var i = Math.floor(h * 6),
+            f = h * 6 - i,
+            p = v * (1 - s),
+            q = v * (1 - f * s),
+            t = v * (1 - (1 - f) * s);
+
+        var r, g, b;
+
+        switch (i % 6) {
+        case 0:
+            r = v;
+            g = t;
+            b = p;
+            break;
+        case 1:
+            r = q;
+            g = v;
+            b = p;
+            break;
+        case 2:
+            r = p;
+            g = v;
+            b = t;
+            break;
+        case 3:
+            r = p;
+            g = q;
+            b = v;
+            break;
+        case 4:
+            r = t;
+            g = p;
+            b = v;
+            break;
+        case 5:
+            r = v;
+            g = p;
+            b = q;
+            break;
+        }
+
+        r = Math.floor(r * 255) + 256;
+        g = Math.floor(g * 255) + 256;
+        b = Math.floor(b * 255) + 256;
+
+        return '#'
+            + r.toString(16).slice(1)
+            + g.toString(16).slice(1)
+            + b.toString(16).slice(1);
+    }
+
+    /**
+     * Heavily based on:
+     * http://stackoverflow.com/a/8023734/23501
+     */
+    function hexRgbToHsv(hexRgb) {
+        var tokens = /^#(..)(..)(..)$/.exec(hexRgb);
+
+        if (tokens) {
+            var rgb = tokens.slice(1).map(function (hex) {
+                return parseInt(hex, 16) / 255; // Normalize to 1
+            });
+
+            var r = rgb[0],
+                g = rgb[1],
+                b = rgb[2],
+                h, s,
+                v = Math.max(r, g, b),
+                diff = v - Math.min(r, g, b),
+                diffc = function (c) {
+                    return (v - c) / 6 / diff + 1 / 2;
+                };
+
+            if (diff === 0) {
+                h = s = 0;
+            } else {
+                s = diff / v;
+
+                var rr = diffc(r),
+                    gg = diffc(g),
+                    bb = diffc(b);
+
+                if (r === v) {
+                    h = bb - gg;
+                } else if (g === v) {
+                    h = (1 / 3) + rr - bb;
+                } else if (b === v) {
+                    h = (2 / 3) + gg - rr;
+                }
+
+                if (h < 0) {
+                    h += 1;
+                } else if (h > 1) {
+                    h -= 1;
+                }
+            }
+
+            return {
+                h: h,
+                s: s,
+                v: v
+            };
+        }
+    }
+
+    return angular.module('mp.colorPicker', []).directive('colorPicker', [ '$window', function ($window) {
+        // Introduce custom elements for IE8
+        $window.document.createElement('color-picker');
+
+        var tmpl = ''
+            + '<div class="angular-color-picker">'
+            + '    <div class="_variations" ng-style="{ backgroundColor: hueBackgroundColor }">'
+            + '        <div class="_whites">'
+            + '            <div class="_blacks">'
+            + '                <div class="_cursor" ng-if="colorCursor" ng-style="{ left: colorCursor.x - 5 + \'px\', top: colorCursor.y - 5 + \'px\' }"></div>'
+            + '                <div class="_mouse-trap" ng-mousedown="startDrag($event, \'color\')"></div>'
+            + '            </div>'
+            + '        </div>'
+            + '    </div>'
+            + ''
+            + '    <div class="_hues">'
+            + '        <div class="_ie-1"></div>'
+            + '        <div class="_ie-2"></div>'
+            + '        <div class="_ie-3"></div>'
+            + '        <div class="_ie-4"></div>'
+            + '        <div class="_ie-5"></div>'
+            + '        <div class="_ie-6"></div>'
+            + '        <div class="_cursor" ng-style="{ top: hueCursor - 5 + \'px\' }"></div>'
+            + '        <div class="_mouse-trap" ng-mousedown="startDrag($event, \'hue\')"></div>'
+            + '    </div>'
+            + '</div>';
+
+        return {
+            restrict: 'AE',
+            template: tmpl,
+            replace: true,
+            require: '?ngModel',
+            scope: {
+            },
+
+            link: function ($scope, $element, $attributes, ngModel) {
+                $scope.hsv = { h: 0, s: 0, v: 0 };
+
+                if (ngModel) {
+                    ngModel.$render = function () {
+                        if (/^#[0-9A-Fa-f]{6}$/.test(ngModel.$viewValue)) {
+                            $scope.color = ngModel.$viewValue;
+                            $scope.hsv = hexRgbToHsv($scope.color);
+                            $scope.colorCursor = {
+                                x: $scope.hsv.s * 200,
+                                y: (1 - $scope.hsv.v) * 200
+                            };
+                        } else {
+                            $scope.color = null;
+                            $scope.hsv = { h: 0.5 };
+                            $scope.colorCursor = null;
+                        }
+
+                        $scope.hueBackgroundColor = hsvToHexRgb($scope.hsv.h, 1, 1);
+                        $scope.hueCursor = $scope.hsv.h * 200;
+                    };
+                }
+
+                var dragSubject,
+                    dragRect;
+
+                function doDrag(x, y) {
+                    x = Math.max(Math.min(x, dragRect.width), 0);
+                    y = Math.max(Math.min(y, dragRect.height), 0);
+
+                    if (dragSubject === 'hue') {
+                        $scope.hueCursor = y;
+
+                        $scope.hsv.h = y / dragRect.height;
+
+                        $scope.hueBackgroundColor = hsvToHexRgb($scope.hsv.h, 1, 1);
+                    } else {
+                        $scope.colorCursor = {
+                            x: x,
+                            y: y
+                        };
+
+                        $scope.hsv.s = x / dragRect.width;
+                        $scope.hsv.v = 1 - y / dragRect.height;
+                    }
+
+                    if (typeof $scope.hsv.s !== 'undefined') {
+                        $scope.color = hsvToHexRgb($scope.hsv);
+
+                        if (ngModel) {
+                            ngModel.$setViewValue($scope.color);
+                        }
+                    }
+                }
+
+                function onMouseMove(evt) {
+                    evt.preventDefault();
+
+                    $scope.$apply(function () {
+                        doDrag(evt.clientX - dragRect.x, evt.clientY - dragRect.y);
+                    });
+                }
+
+                $scope.startDrag = function (evt, subject) {
+                    var rect = evt.target.getBoundingClientRect();
+
+                    dragSubject = subject;
+                    dragRect = {
+                        x: rect.left,
+                        y: rect.top,
+                        width: rect.right - rect.left,
+                        height: rect.bottom - rect.top
+                    };
+
+                    doDrag(evt.offsetX || evt.layerX, evt.offsetY || evt.layerY);
+
+                    angular.element($window)
+                        .on('mousemove', onMouseMove)
+                        .one('mouseup', function () {
+                            angular.element($window).off('mousemove', onMouseMove);
+                        });
+                };
+            }
+        };
+    }]);
+}));
+
+},{"angular":16}],10:[function(require,module,exports){
 /**
  * @license AngularJS v1.4.8
  * (c) 2010-2015 Google, Inc. http://angularjs.org
@@ -1431,15 +1718,15 @@ function ngViewFillContentFactory($compile, $controller, $route) {
 
 })(window, window.angular);
 
-},{}],9:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 require('./angular-route');
 module.exports = 'ngRoute';
 
-},{"./angular-route":8}],10:[function(require,module,exports){
+},{"./angular-route":10}],12:[function(require,module,exports){
 require('./ui-bootstrap-tpls');
 module.exports = 'ui.bootstrap';
 
-},{"./ui-bootstrap-tpls":11}],11:[function(require,module,exports){
+},{"./ui-bootstrap-tpls":13}],13:[function(require,module,exports){
 /*
  * angular-ui-bootstrap
  * http://angular-ui.github.io/bootstrap/
@@ -9943,7 +10230,7 @@ angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCac
     "");
 }]);
 !angular.$$csp() && angular.element(document).find('head').prepend('<style type="text/css">.ng-animate.item:not(.left):not(.right){-webkit-transition:0s ease-in-out left;transition:0s ease-in-out left}</style>');
-},{}],12:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /*
 *  AngularJs Fullcalendar Wrapper for the JQuery FullCalendar
 *  API @ http://arshaw.com/fullcalendar/
@@ -10287,7 +10574,7 @@ angular.module('ui.calendar', [])
     };
 }]);
 
-},{}],13:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /**
  * @license AngularJS v1.4.8
  * (c) 2010-2015 Google, Inc. http://angularjs.org
@@ -39306,11 +39593,11 @@ $provide.value("$locale", {
 })(window, document);
 
 !window.angular.$$csp().noInlineStyle && window.angular.element(document.head).prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style>');
-},{}],14:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 require('./angular');
 module.exports = angular;
 
-},{"./angular":13}],15:[function(require,module,exports){
+},{"./angular":15}],17:[function(require,module,exports){
 /*!
  * Bootstrap v3.3.6 (http://getbootstrap.com)
  * Copyright 2011-2015 Twitter, Inc.
@@ -41675,7 +41962,7 @@ if (typeof jQuery === 'undefined') {
 
 }(jQuery);
 
-},{}],16:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 /*!
  * FullCalendar v2.5.0
  * Docs & License: http://fullcalendar.io/
@@ -53174,7 +53461,7 @@ fcViews.agendaWeek = {
 
 return FC; // export for Node/CommonJS
 });
-},{"jquery":18,"moment":17}],17:[function(require,module,exports){
+},{"jquery":20,"moment":19}],19:[function(require,module,exports){
 //! moment.js
 //! version : 2.10.6
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -56370,7 +56657,7 @@ return FC; // export for Node/CommonJS
     return _moment;
 
 }));
-},{}],18:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.1.4
  * http://jquery.com/
@@ -65582,6 +65869,6 @@ return jQuery;
 
 }));
 
-},{}],19:[function(require,module,exports){
-arguments[4][17][0].apply(exports,arguments)
-},{"dup":17}]},{},[5,1]);
+},{}],21:[function(require,module,exports){
+arguments[4][19][0].apply(exports,arguments)
+},{"dup":19}]},{},[6,1]);

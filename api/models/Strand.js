@@ -17,14 +17,18 @@ module.exports = {
       enum: ['gradient', 'solid']
     },
     animation: {
-      type: 'string'
+      type: 'string',
       enum: ['blink', 'loop']
     },
     solidColor: {
       type: 'string'
     },
-    gradientStops:: {
+    gradientStops: {
       type: 'json'
+    },
+    active: {
+      type: 'boolean',
+      defaultsTo: true
     }
   }
 };

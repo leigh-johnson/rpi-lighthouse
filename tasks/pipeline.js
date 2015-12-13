@@ -16,7 +16,9 @@ var tmpPath = '.tmp/public/';
 // (if you're using LESS with the built-in default config, you'll want
 //  to change `assets/styles/importer.less` instead.)
 var cssFilesToInject = [
-  'styles/**/*.css'
+  'styles/**/*.css',
+  // each partial will handle dependency injection
+  '!styles/dependencies/*.css'
 ];
 
 

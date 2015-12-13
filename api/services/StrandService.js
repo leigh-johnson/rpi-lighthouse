@@ -16,5 +16,17 @@ module.exports = {
       if (error) throw err;
       next(strand);
     });
+  },
+  setActiveStrand: function(strand, next){
+    Strand.update({id: strand.id}, {active: true}).exec(function(err, strand){
+      if err throw err;
+      next(strand);
+    });
+  },
+  getActiveStrand: function(strand, next){
+    Strand.findOne({active: true}).exec(function(err, strand){
+      if (err) throw err;
+      next(strand);
+    });
   }
 };

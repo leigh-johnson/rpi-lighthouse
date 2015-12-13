@@ -32,3 +32,10 @@ var CalendarService = require('./services/CalendarService');
 var calendarApp = angular.module('calendarApp', ['ui.calendar', 'ui.bootstrap'])
     .controller('CalendarCtrl', CalendarController)
     .service('CalendarService', CalendarService);
+
+var StrandEvent = reuiqre('./services/EventService');
+var StrandController = require('/controller/StrandController');
+
+var strandApp = angular.module('strandApp', ['ngRoute', 'ui.bootstrap'])
+    .service('StrandService', EventService)
+    .controller('StrandCtrl', ['$scope', '$rootScope', 'StrandService', StrandController]);

@@ -22,6 +22,18 @@ module.exports = {
     EventService.removeStrand(strandVals, function(success){
       res.json(success);
     });
+  },
+  setActiveStrand: function(req, res){
+    var strand = (req.body) ? req.body.strand : undefined
+    EventService.setActiveStrand(strand, function(success){
+      res.json(success);
+    });
+  },
+  getActiveStrand: function(req, res){
+    var stand = (req.body) ? req.body.strand : undefined
+    EventService.getActiveStrand(strand, function(success){
+      res.json(success)
+    });
   }
 };
 

@@ -9,7 +9,7 @@ block content
         | No strand pattern is active yet!
       .panel
         .row
-          h1.text-center New Strand Pattern
+          h1.text-center Create Strand Pattern
         .row
           .col-md-4
             .row
@@ -24,18 +24,35 @@ block content
                 h3 How many LEDs?
                 .input-group
                   span.input-group-addon: span.fa.fa-lightbulb-o
-                  input.form-control(type="text" ngModel="editStrand.numLEDs")
+                  input.form-control(type="number" min="1" step="1" ngModel="editStrand.numLEDs" value="{{editStrand.numLEDs}}")
+            .row
+              .col-md-12
+                h3 Animations @todo
+                .btn-group(role="group")
+                  button.btn.btn-default.disabled(type='button') Interval
+                  button.btn.btn-default.disabled(type='button') Wave
+                  button.btn.btn-default.disabled(type='button') Blink
           .col-md-4
             .row
               h3(ng-show="editStrand.pattern == 'gradient'") Add Color Stop
               h3(ng-show="editStrand.pattern == 'solid'") Pick a Color
-              color-picker.col-md-11(ng-model="newColor")
-            .row
               .input-group.col-md-11
-                input.form-control(type="text" ng-model="newColor" ng-init="newColor = '#f7f7f7'")
+                input.form-control(type="text" ng-model="editStrand.solidColor" ng-init="editStrand.solidColor = '#f7f7f7'")
                 span.input-group-btn: button.btn.btn-primary(type="button"): span.fa.fa-plus
+            .row
+              color-picker.col-md-11(ng-model="editStrand.solidColor")
+          .col-md-4
+            h3(ng-show="editStrand.pattern == 'solid'") Preview
+            span.fa.fa-lightbulb-o(ng-repeat="light in range({{editStrand.numLEDs}}) track by $index")
+
+        .row.padding-top
+          .col-md-12
+            .row
+              .col-md-12.col-md-offset
+                button.btn.btn-success.btn-block.btn-lg
+                  h3 Save
       .well
-        h1 Saved Strand Patterns
+        h1.text-center Saved Patterns
         .alert.alert-danger(ng-show="strands == []")
           | No strand patterns have been saved. Create one!
 

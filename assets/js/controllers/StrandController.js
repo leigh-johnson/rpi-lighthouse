@@ -1,7 +1,11 @@
 var StrandController = function($scope, $rootScope, StrandService){
+ // all strand objects
  $scope.strands = [];
+ // active strand object
  $scope.activeStrand = {};
+ // current working model
  $scope.editStrand = {};
+ $scope.editStrand.numLEDs = 30;
  $scope.editStrand.pattern = 'solid';
 
  StrandService.getStrands().then(function(res){
@@ -24,5 +28,13 @@ var StrandController = function($scope, $rootScope, StrandService){
     // or recall getStrands();
   });
  };
+ // return current working editStrand model
+ $scope.getEditStrand = function(){
+
+ };
+ // returns existing strand & sets editStrand model
+ $scope.setEditStrand = function(id){
+
+ }
 };
 module.exports = StrandController;

@@ -6,6 +6,8 @@ var StrandController = function($scope, $rootScope, StrandService){
  // current working model
  $scope.editStrand = {};
  $scope.editStrand.numLEDs = 30;
+ $scope.editStrand.leds = new Array($scope.editStrand.numLEDs);
+
  $scope.editStrand.pattern = 'solid';
 
  StrandService.getStrands().then(function(res){
@@ -22,6 +24,10 @@ var StrandController = function($scope, $rootScope, StrandService){
     // reset $scope.strand
   });
  };
+ $scope.updateNumLEDs = function(){
+  $scope.$apply();
+ };
+
  $scope.removeStrand = function(){
   StrandService.removeStrand(strand)(function(res){
     // splice strand from $scope.strands

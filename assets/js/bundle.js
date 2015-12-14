@@ -38,7 +38,7 @@ var calendarApp = angular.module('calendarApp', ['ui.calendar', 'ui.bootstrap'])
 var StrandService = require('./services/StrandService');
 var StrandController = require('./controllers/StrandController');
 
-var strandApp = angular.module('strandApp', ['ngRoute', 'ui.bootstrap', 'mp.colorPicker'])
+var strandApp = angular.module('strandApp', ['ngRoute', 'ui.bootstrap','ui.utils', 'mp.colorPicker'])
     .service('StrandService', StrandService)
     .controller('StrandCtrl', ['$scope', '$rootScope', 'StrandService', StrandController]);
 },{"./controllers/CalendarController":2,"./controllers/EventController":3,"./controllers/StrandController":4,"./dependencies/gcal":5,"./services/CalendarService":7,"./services/EventService":8,"./services/StrandService":9,"angular":17,"angular-color-picker":10,"angular-route":12,"angular-ui-bootstrap":13,"angular-ui-calendar":15,"fullcalendar":19}],2:[function(require,module,exports){
@@ -200,6 +200,8 @@ var StrandController = function($scope, $rootScope, StrandService){
  // current working model
  $scope.editStrand = {};
  $scope.editStrand.numLEDs = 30;
+ $scope.editStrand.leds = new Array($scope.editStrand.numLEDs);
+
  $scope.editStrand.pattern = 'solid';
 
  StrandService.getStrands().then(function(res){
@@ -216,6 +218,10 @@ var StrandController = function($scope, $rootScope, StrandService){
     // reset $scope.strand
   });
  };
+ $scope.updateNumLEDs = function(){
+  $scope.$apply();
+ };
+
  $scope.removeStrand = function(){
   StrandService.removeStrand(strand)(function(res){
     // splice strand from $scope.strands

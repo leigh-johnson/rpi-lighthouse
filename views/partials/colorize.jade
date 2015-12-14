@@ -24,7 +24,7 @@ block content
                 h3 How many LEDs?
                 .input-group
                   span.input-group-addon: span.fa.fa-lightbulb-o
-                  input.form-control(type="number" min="1" step="1" ngModel="editStrand.numLEDs" value="{{editStrand.numLEDs}}")
+                  input.form-control(type="number" min="1" step="1" ngModel="editStrand.numLEDs" value="{{editStrand.numLEDs}}" ng-blur="$apply()")
             .row
               .col-md-12
                 h3 Animations @todo
@@ -43,7 +43,7 @@ block content
               color-picker.col-md-11(ng-model="editStrand.solidColor")
           .col-md-4
             h3(ng-show="editStrand.pattern == 'solid'") Preview
-            span.fa.fa-lightbulb-o(ng-repeat="light in range({{editStrand.numLEDs}}) track by $index")
+            span.fa.fa-lightbulb-o(ng-repeat="led in editStrand.leds track by $index")
 
         .row.padding-top
           .col-md-12

@@ -13,12 +13,13 @@ block content
         .row
           .col-md-4
             .row
-              .col-md-12
+              //.col-md-12
                 h3 Choose a pattern
-                .btn-group(role="group" ng-model="editStrand.pattern")
-                  button.btn.btn-default(ng-model='editStrand.pattern' uib-btn-radio="'solid'" type='button') Solid
-                  button.btn.btn-default(ng-model='editStrand.pattern' uib-btn-radio="'gradient'" type='button') Gradient
-                  button.btn.btn-default.disabled(ng-model='editStrand.pattern' uib-btn-radio="'rainbow'" type='button' ng-disabled="true==true") Rainbow
+                .btn-group(role="group" ng-model="editStrand.activePattern")
+                  button.btn.btn-default(ng-model='editStrand.activePattern' uib-btn-radio="'solid'" type='button') Solid
+                  button.btn.btn-default(ng-model='editStrand.activePattern' uib-btn-radio="'gradient'" type='button') Gradient
+                  button.btn.btn-default.disabled(ng-model='editStrand.activePattern' uib-btn-radio="'rainbow'" type='button' ng-disabled="true==true") Rainbow
+                .label {{getPatternDesc}} / {{editStrand.activePattern}}
             .row
               .col-md-10
                 h3 How many LEDs?
@@ -33,6 +34,11 @@ block content
                   button.btn.btn-default.disabled(type='button') Wave
                   button.btn.btn-default.disabled(type='button') Blink
           .col-md-4
+            h3 Preview
+            a.preview-led-size(ng-repeat="led in editStrand.leds track by $index" 
+              ng-click='setActiveLED($index)'
+              ng-class="{active: $index == editStrand.leds.selected}"): span.fa.fa-lightbulb-o
+          .col-md-4
             .row
               h3(ng-show="editStrand.pattern == 'gradient'") Add Color Stop
               h3(ng-show="editStrand.pattern == 'solid'") Pick a Color
@@ -41,9 +47,6 @@ block content
                 span.input-group-btn: button.btn.btn-primary(type="button"): span.fa.fa-plus
             .row
               color-picker.col-md-11(ng-model="editStrand.solidColor")
-          .col-md-4
-            h3(ng-show="editStrand.pattern == 'solid'") Preview
-            span.fa.fa-lightbulb-o(ng-repeat="led in editStrand.leds track by $index")
 
         .row.padding-top
           .col-md-12

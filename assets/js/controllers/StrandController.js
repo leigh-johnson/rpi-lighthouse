@@ -7,8 +7,16 @@ var StrandController = function($scope, $rootScope, StrandService){
  $scope.editStrand = {};
  $scope.editStrand.numLEDs = 30;
  $scope.editStrand.leds = new Array($scope.editStrand.numLEDs);
-
- $scope.editStrand.pattern = 'solid';
+ $scope.editStrand.leds.selected = 0;
+ $scope.editStrand.patterns = {
+  'solid' : {
+    'description': 'Choose a solid color for each bulb'
+  },
+    'gradient' : { 
+      'description' : 'Set gradient stops along the strand'
+    },
+ }
+ $scope.editStrand.activePattern = 'solid';
 
  StrandService.getStrands().then(function(res){
     $scope.strands = res;
@@ -24,6 +32,12 @@ var StrandController = function($scope, $rootScope, StrandService){
     // reset $scope.strand
   });
  };
+ $scope.setActiveLED = function(index){
+  $scope.editStrand.leds.selected = index;
+ }
+ $scope.getPatternDesc = function(){
+  return $scope.editStrand.patterns[$scope.editStrand.activePattern].description
+ }
  $scope.updateNumLEDs = function(){
   diff = $scope.editStrand.numLEDs - $scope.editStrand.leds.length;
   console.log(diff)

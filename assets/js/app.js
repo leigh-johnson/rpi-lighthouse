@@ -37,6 +37,6 @@ var calendarApp = angular.module('calendarApp', ['ui.calendar', 'ui.bootstrap'])
 var StrandService = require('./services/StrandService');
 var StrandController = require('./controllers/StrandController');
 
-var strandApp = angular.module('strandApp', ['ngRoute', 'ui.bootstrap','ui.utils', 'mp.colorPicker'])
+var strandApp = angular.module('strandApp', ['ngRoute', 'ui.bootstrap', 'mp.colorPicker'])
     .service('StrandService', StrandService)
     .controller('StrandCtrl', ['$scope', '$rootScope', 'StrandService', StrandController]);

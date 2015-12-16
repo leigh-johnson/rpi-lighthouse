@@ -38,7 +38,7 @@ var calendarApp = angular.module('calendarApp', ['ui.calendar', 'ui.bootstrap'])
 var StrandService = require('./services/StrandService');
 var StrandController = require('./controllers/StrandController');
 
-var strandApp = angular.module('strandApp', ['ngRoute', 'ui.bootstrap','ui.utils', 'mp.colorPicker'])
+var strandApp = angular.module('strandApp', ['ngRoute', 'ui.bootstrap', 'mp.colorPicker'])
     .service('StrandService', StrandService)
     .controller('StrandCtrl', ['$scope', '$rootScope', 'StrandService', StrandController]);
 },{"./controllers/CalendarController":2,"./controllers/EventController":3,"./controllers/StrandController":4,"./dependencies/gcal":5,"./services/CalendarService":7,"./services/EventService":8,"./services/StrandService":9,"angular":17,"angular-color-picker":10,"angular-route":12,"angular-ui-bootstrap":13,"angular-ui-calendar":15,"fullcalendar":19}],2:[function(require,module,exports){
@@ -219,7 +219,20 @@ var StrandController = function($scope, $rootScope, StrandService){
   });
  };
  $scope.updateNumLEDs = function(){
-  $scope.$apply();
+  diff = $scope.editStrand.numLEDs - $scope.editStrand.leds.length;
+  console.log(diff)
+  if ( diff < 0){
+    // splice extra leds
+    diff = -diff;
+    $scope.editStrand.leds.splice(-1, diff);
+  }
+  else{
+    // init empty led objects in numLEDs array
+    for (i=0; i < diff; i++){
+        obj = {};
+        $scope.editStrand.leds.push(obj);
+      }
+  }
  };
 
  $scope.removeStrand = function(){

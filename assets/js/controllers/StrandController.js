@@ -25,7 +25,20 @@ var StrandController = function($scope, $rootScope, StrandService){
   });
  };
  $scope.updateNumLEDs = function(){
-  $scope.$apply();
+  diff = $scope.editStrand.numLEDs - $scope.editStrand.leds.length;
+  console.log(diff)
+  if ( diff < 0){
+    // splice extra leds
+    diff = -diff;
+    $scope.editStrand.leds.splice(-1, diff);
+  }
+  else{
+    // init empty led objects in numLEDs array
+    for (i=0; i < diff; i++){
+        obj = {};
+        $scope.editStrand.leds.push(obj);
+      }
+  }
  };
 
  $scope.removeStrand = function(){

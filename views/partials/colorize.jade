@@ -13,19 +13,22 @@ block content
         .row
           .col-md-4
             .row
-              //.col-md-12
+              .col-md-12
                 h3 Choose a pattern
-                .btn-group(role="group" ng-model="editStrand.activePattern")
-                  button.btn.btn-default(ng-model='editStrand.activePattern' uib-btn-radio="'solid'" type='button') Solid
-                  button.btn.btn-default(ng-model='editStrand.activePattern' uib-btn-radio="'gradient'" type='button') Gradient
-                  button.btn.btn-default.disabled(ng-model='editStrand.activePattern' uib-btn-radio="'rainbow'" type='button' ng-disabled="true==true") Rainbow
-                .label {{getPatternDesc}} / {{editStrand.activePattern}}
+                .btn-group(role="group" ng-model="pattern")
+                  button.btn.btn-default(ng-model='pattern'
+                    uib-btn-radio='{{key}}'
+                    ng-repeat="(key, value) in patterns"
+                    ng-disabled='value.disabled == true'
+                    type='button') 
+                    | {{value.displayName}}
+                .label {{value.description}}
             .row
               .col-md-10
                 h3 How many LEDs?
                 .input-group
                   span.input-group-addon: span.fa.fa-lightbulb-o
-                  input.form-control(type="number" min="1" step="1" ng-model="editStrand.numLEDs" value="{{editStrand.numLEDs}}" ng-change="updateNumLEDs()")
+                  input.form-control(type="number" min="1" step="1" ng-model="numLEDs" value="{{numLEDs}}" ng-change="updateNumLEDs()")
             .row
               .col-md-12
                 h3 Animations @todo
@@ -35,18 +38,23 @@ block content
                   button.btn.btn-default.disabled(type='button') Blink
           .col-md-4
             h3 Preview
-            a.preview-led-size(ng-repeat="led in editStrand.leds track by $index" 
+            a.preview-led-size(ng-repeat="led in leds track by $index" 
               ng-click='setActiveLED($index)'
-              ng-class="{active: $index == editStrand.leds.selected}"): span.fa.fa-lightbulb-o
+              ng-class="{active: $index == activeLED}"
+              style="color: {{leds[$index].color || '#3498db'}}"): span.fa.fa-lightbulb-o
           .col-md-4
             .row
-              h3(ng-show="editStrand.pattern == 'gradient'") Add Color Stop
-              h3(ng-show="editStrand.pattern == 'solid'") Pick a Color
-              .input-group.col-md-11
-                input.form-control(type="text" ng-model="editStrand.solidColor" ng-init="editStrand.solidColor = '#f7f7f7'")
-                span.input-group-btn: button.btn.btn-primary(type="button"): span.fa.fa-plus
+              h3 Assign LED Color
+                .input-group.col-md-11
+                    input.form-control(type="text" 
+                    ng-model="leds[activeLED].color" 
+                    ng-init="leds[activeLED].color = '#f1c40f'")
+                    span.input-group-btn: button.btn.btn-primary(
+                    type="button"
+                    ng-click='applyAllColor(leds[activeLED].color)')
+                      span Apply All
             .row
-              color-picker.col-md-11(ng-model="editStrand.solidColor")
+              color-picker.col-md-11(ng-model="leds[activeLED].color")
 
         .row.padding-top
           .col-md-12

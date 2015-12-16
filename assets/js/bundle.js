@@ -193,24 +193,43 @@ var EventController = function($scope, $rootScope, EventService) {
 module.exports = EventController;
 },{}],4:[function(require,module,exports){
 var StrandController = function($scope, $rootScope, StrandService){
+ $scope.init = function(){
  // all strand objects
  $scope.strands = [];
  // active strand object
  $scope.activeStrand = {};
  // current working model
- $scope.editStrand = {};
- $scope.editStrand.numLEDs = 30;
- $scope.editStrand.leds = new Array($scope.editStrand.numLEDs);
- $scope.editStrand.leds.selected = 0;
- $scope.editStrand.patterns = {
+ $scope.strands.active = {};
+ $scope.numLEDs = 30;
+ // @todo  1d matrix (for now...)
+ $scope.leds = [];
+ $scope.activeLED = 0;
+
+ // selected pattern
+ $scope.pattern = {};
+ // pattern dictionary
+ $scope.patterns = {
   'solid' : {
+    displayName: 'Solid',
     'description': 'Choose a solid color for each bulb'
   },
-    'gradient' : { 
-      'description' : 'Set gradient stops along the strand'
-    },
- }
- $scope.editStrand.activePattern = 'solid';
+  'gradient' : { 
+    displayName: 'gradient',
+    'description' : 'Set gradient stops along the strand'
+  },
+  'rainbow': {
+    displayName: 'Rainbow',
+    'description' : 'Rainbow gradient preset',
+    'disabled': true
+  }
+ };
+  for (i=0; i < $scope.numLEDs; i++){
+  obj = {};
+  $scope.leds.push(obj);
+  }
+ };
+
+ $scope.init();
 
  StrandService.getStrands().then(function(res){
     $scope.strands = res;
@@ -226,26 +245,29 @@ var StrandController = function($scope, $rootScope, StrandService){
     // reset $scope.strand
   });
  };
+ $scope.applyAllColor = function(color){
+  for (i=0; i < $scope.leds.length; i++){
+    ($scope.leds[i]).color = color;
+  }
+  return
+ };
  $scope.setActiveLED = function(index){
-  $scope.editStrand.leds.selected = index;
+  $scope.activeLED = index;
  }
  $scope.getPatternDesc = function(){
-  return $scope.editStrand.patterns[$scope.editStrand.activePattern].description
+  //return $scope..patterns[$scope.editStrand.activePattern].description
  }
  $scope.updateNumLEDs = function(){
-  diff = $scope.editStrand.numLEDs - $scope.editStrand.leds.length;
-  console.log(diff)
-  if ( diff < 0){
-    // splice extra leds
-    diff = -diff;
-    $scope.editStrand.leds.splice(-1, diff);
-  }
-  else{
+  if ( $scope.leds.length < $scope.numLEDs){
+     diff = $scope.numLEDs - $scope.leds.length ;
     // init empty led objects in numLEDs array
     for (i=0; i < diff; i++){
         obj = {};
-        $scope.editStrand.leds.push(obj);
+        $scope.leds.push(obj);
       }
+  }
+  else {
+      $scope.leds.length = $scope.numLEDs;
   }
  };
 

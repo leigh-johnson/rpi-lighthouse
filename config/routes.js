@@ -41,7 +41,10 @@ module.exports.routes = {
   },
   '/': {
     view: 'partials/colorize'
-  }
+  },
+
+  'get /strand/active': 'StrandController.getActive',
+  'post /strand/active': 'StrandController.setActive'
 
   /***************************************************************************
   *                                                                          *

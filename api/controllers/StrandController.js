@@ -6,31 +6,31 @@
  */
 
 module.exports = {
-	getStrands: function(req, res){
-    StrandService.getStrands(function(strands){
+	list: function(req, res){
+    StrandService.list(function(strands){
       res.json(strands);
     });
   },
-  addStrand: function(req, res){
+  create: function(req, res){
     var strandVals = (req.body) ? req.body : undefined
-    StrandService.addStrand(strandVals, function(success){
+    StrandService.create(strandVals, function(success){
       res.json(success);
     });
   },
-  removeStrand: function(req, res){
+  remove: function(req, res){
     var strandVals = (req.body) ? req.body : undefined
-    StrandService.removeStrand(strandVals, function(success){
+    StrandService.remove(strandVals, function(success){
       res.json(success);
     });
   },
-  setActiveStrand: function(req, res){
+  setActive: function(req, res){
     var strand = (req.body) ? req.body.strand : undefined
-    StrandService.setActiveStrand(strand, function(success){
+    StrandService.setActive(strand, function(success){
       res.json(success);
     });
   },
-  getActiveStrand: function(req, res){
-    StrandService.getActiveStrand(function(success){
+  getActive: function(req, res){
+    StrandService.getActive(function(success){
       res.json(success)
     });
   }

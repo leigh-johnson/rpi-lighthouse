@@ -12,6 +12,10 @@ module.exports = {
       type: 'integer',
       required: true
     },
+    leds: {
+      type: 'array',
+      required: true,
+    }
     pattern: {
       type: 'string',
       enum: ['gradient', 'solid'],
@@ -20,12 +24,6 @@ module.exports = {
     animation: {
       type: 'string',
       enum: ['blink', 'loop']
-    },
-    solidColor: {
-      type: 'string'
-    },
-    gradientStops: {
-      type: 'json'
     },
     active: {
       type: 'boolean',

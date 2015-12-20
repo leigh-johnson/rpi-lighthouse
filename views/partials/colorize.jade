@@ -5,8 +5,6 @@ append css
 block content
   div(ng-app='strandApp')
     .container(ng-controller='StrandCtrl')
-      .alert.alert-info(ng-show="activeStrand == {}")
-        | No strand pattern is active yet!
       .panel
         .row
           h1.text-center Create Strand Pattern
@@ -60,10 +58,13 @@ block content
           .col-md-12
             .row
               .col-md-12.col-md-offset
-                button.btn.btn-success.btn-block.btn-lg
-                  h3 Save
+                button.btn.btn-success.btn-block.btn-lg(
+                ng-click='saveStrand()')
+                  h3 Save & Apply
       .well
         h1.text-center Saved Patterns
         .alert.alert-danger(ng-show="strands == []")
           | No strand patterns have been saved. Create one!
+        section(ng-repeat="strand in strands track by $index")
+          span.fa.fa-lightbulb-o 
 

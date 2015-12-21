@@ -13,7 +13,7 @@ block content
             .row
               .col-md-12
                 h3 Choose a pattern
-                .btn-group(role="group" ng-model="pattern")
+                .btn-group(role="group")
                   button.btn.btn-default(ng-model='pattern'
                     uib-btn-radio='{{key}}'
                     ng-repeat="(key, value) in patterns"
@@ -36,35 +36,43 @@ block content
                   button.btn.btn-default.disabled(type='button') Blink
           .col-md-4
             h3 Preview
-            a.preview-led-size(ng-repeat="led in leds track by $index" 
+            a.preview-led-lg(ng-repeat="led in leds track by $index" 
               ng-click='setActiveLED($index)'
               ng-class="{active: $index == activeLED}"
-              style="color: {{leds[$index].color || '#3498db'}}"): span.fa.fa-lightbulb-o
+              style="color: {{leds[$index] || '#3498db'}}"): span.fa.fa-lightbulb-o
           .col-md-4
             .row
               h3 Assign LED Color
                 .input-group.col-md-11
                     input.form-control(type="text" 
-                    ng-model="leds[activeLED].color" 
-                    ng-init="leds[activeLED].color = '#f1c40f'")
+                    ng-model="leds[activeLED]" 
+                    ng-init="leds[activeLED] = '#f1c40f'")
                     span.input-group-btn: button.btn.btn-primary(
                     type="button"
-                    ng-click='applyAllColor(leds[activeLED].color)')
+                    ng-click='applyAllColor(leds[activeLED])')
                       span Apply All
             .row
-              color-picker.col-md-11(ng-model="leds[activeLED].color")
+              color-picker.col-md-11(ng-model="leds[activeLED]")
 
         .row.padding-top
           .col-md-12
             .row
               .col-md-12.col-md-offset
                 button.btn.btn-success.btn-block.btn-lg(
-                ng-click='saveStrand()')
-                  h3 Save & Apply
-      .well
+                ng-click='create()')
+                  h3 Save
+      .panel
         h1.text-center Saved Patterns
         .alert.alert-danger(ng-show="strands == []")
           | No strand patterns have been saved. Create one!
-        section(ng-repeat="strand in strands track by $index")
-          span.fa.fa-lightbulb-o 
+        section.well(ng-repeat="strand in strands track by $index")
+          .col-md-8
+            span.fa.fa-lightbulb-o.preview-led-sm(
+            ng-repeat='led in strand.leds track by $index' 
+            style="color: {{leds[$index]}}")
+          .col-md-4
+            .btn-group(role='group')
+              button.btn.btn-primary.fa(ng-class="{'active fa-circle': strand.active == true, 'fa-circle-o': strand.active == false}")
+              button.btn.btn-warning.fa.fa-edit
+              button.btn.btn-danger.fa.fa-remove(ng-click="remove(strand)")
 

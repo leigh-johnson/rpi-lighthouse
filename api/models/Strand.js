@@ -15,7 +15,7 @@ module.exports = {
     leds: {
       type: 'array',
       required: true,
-    }
+    },
     pattern: {
       type: 'string',
       enum: ['gradient', 'solid'],
@@ -27,7 +27,7 @@ module.exports = {
     },
     active: {
       type: 'boolean',
-      defaultsTo: true
+      defaultsTo: false
     }
   }
 };

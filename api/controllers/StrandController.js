@@ -6,6 +6,7 @@
  */
 
 module.exports = {
+  ws281x: require('rpi-ws281x-native'),
 	list: function(req, res){
     StrandService.list(function(strands){
       res.json(strands);
@@ -26,6 +27,7 @@ module.exports = {
   setActive: function(req, res){
     var strand = (req.body) ? req.body.strand : undefined
     StrandService.setActive(strand, function(success){
+      console.log(ws281x);
       res.json(success);
     });
   },

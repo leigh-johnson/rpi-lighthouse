@@ -22,7 +22,7 @@ var StrandService = function($http, $q){
       var defer = $q.defer();
       $http.post('/strand/remove', strand).success(function(res){
         defer.resolve(res);
-      }).errur(function(err){
+      }).error(function(err){
         defer.reject(err);
       });
       return defer.promise

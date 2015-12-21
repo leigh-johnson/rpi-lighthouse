@@ -39,10 +39,21 @@ module.exports.routes = {
   '/schedule/new' : {
     view: 'partials/event'
   },
+  // Main dashboard
   '/': {
-    view: 'partials/colorize'
+    view: 'partials/listStrand'
   },
-
+  // CRUD
+  'get /strands/create' : {
+    view: 'partials/createStrand'
+  },
+  'post /strands/create' : 'StrandController.create',
+  'get /strand/edit/:id' : {
+    view: '/partials/editStrand'
+  },
+  'post /strand/edit/:id' : 'StrandController.update',
+  // GET / POST to /remove/:id are Blueprinted by sails
+  
   'get /strand/active': 'StrandController.getActive',
   'post /strand/active': 'StrandController.setActive'
 

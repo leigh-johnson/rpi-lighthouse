@@ -194,8 +194,9 @@ module.exports = EventController;
 },{}],4:[function(require,module,exports){
 var StrandController = function($scope, $rootScope, StrandService){
  $scope.init = function(){
- // all strand objects
- $scope.strands = [];
+  StrandService.list().then(function(res){
+    $scope.strands = res;
+  });
  // current working model
  //$scope.strands.active = {};
  $scope.numLEDs = 30;
@@ -204,7 +205,7 @@ var StrandController = function($scope, $rootScope, StrandService){
  $scope.activeLED = 0;
 
  // selected pattern
- $scope.pattern = {};
+ $scope.pattern = 'solid';
  // pattern dictionary
  $scope.patterns = {
   'solid' : {
@@ -223,48 +224,42 @@ var StrandController = function($scope, $rootScope, StrandService){
   }
  };
   for (i=0; i < $scope.numLEDs; i++){
-  obj = {};
-  $scope.leds.push(obj);
+  $scope.leds[i] ='#3498db';
   }
  };
 
  $scope.init();
 
- StrandService.list().then(function(res){
-    $scope.strands = res;
- });
  StrandService.getActive().then(function(res){
     $scope.activeStrand = res;
     //console.log(typeof $scope.activeStrand)
  });
- $scope.resetActiveStrand = function(){
-
- };
- $scope.saveStrand = function(){
+ $scope.create = function(){
    strand = {};
    strand.leds = $scope.leds;
    strand.numLEDs = $scope.numLEDs;
-   strand.pattern = $scope.pattern
+   strand.pattern = $scope.pattern;
    StrandService.create(strand).then(function(res){
-    // success
+    console.log(res);
+    $scope.init();
    });
  };
- $scope.create = function(){
-  data = {};
-  data.leds = $scope.leds;
-  data.numLEDs = $scope.numLEDs;
+ $scope.remove = function(strand){
+  StrandService.remove(strand).then(function(res){
+    StrandService.list().then(function(res){
+      console.log(res);
+      $scope.strands = res;
+    });
+  });
  }
  $scope.applyAllColor = function(color){
   for (i=0; i < $scope.leds.length; i++){
-    ($scope.leds[i]).color = color;
+    ($scope.leds[i]) = color;
   }
   return
  };
  $scope.setActiveLED = function(index){
   $scope.activeLED = index;
- }
- $scope.getPatternDesc = function(){
-  //return $scope..patterns[$scope.editStrand.activePattern].description
  }
  $scope.updateNumLEDs = function(){
   if ( $scope.leds.length < $scope.numLEDs){
@@ -576,7 +571,7 @@ var StrandService = function($http, $q){
       var defer = $q.defer();
       $http.post('/strand/remove', strand).success(function(res){
         defer.resolve(res);
-      }).errur(function(err){
+      }).error(function(err){
         defer.reject(err);
       });
       return defer.promise

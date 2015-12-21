@@ -13,7 +13,7 @@ module.exports = {
   },
   remove: function(strandVals, next){
     Strand.destroy(strandVals).exec(function(err, strand){
-      if (error) throw err;
+      if (err) throw err;
       next(strand);
     });
   },

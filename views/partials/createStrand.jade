@@ -61,18 +61,3 @@ block content
                 button.btn.btn-success.btn-block.btn-lg(
                 ng-click='create()')
                   h3 Save
-      .panel
-        h1.text-center Saved Patterns
-        .alert.alert-danger(ng-show="strands == []")
-          | No strand patterns have been saved. Create one!
-        section.well(ng-repeat="strand in strands track by $index")
-          .col-md-8
-            span.fa.fa-lightbulb-o.preview-led-sm(
-            ng-repeat='led in strand.leds track by $index' 
-            style="color: {{leds[$index]}}")
-          .col-md-4
-            .btn-group(role='group')
-              button.btn.btn-primary.fa(ng-class="{'active fa-circle': strand.active == true, 'fa-circle-o': strand.active == false}")
-              button.btn.btn-warning.fa.fa-edit
-              button.btn.btn-danger.fa.fa-remove(ng-click="remove(strand)")
-

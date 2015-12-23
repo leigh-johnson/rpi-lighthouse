@@ -38,10 +38,17 @@ var calendarApp = angular.module('calendarApp', ['ui.calendar', 'ui.bootstrap'])
 var StrandService = require('./services/StrandService');
 var StrandController = require('./controllers/StrandController');
 
+var ListStrandService = require('./services/ListStrandService');
+var ListStrandController = require('./controllers/ListStrandController');
+
+var listStrandApp = angular.module('listStrandApp', ['ngRoute', 'ui.bootstrap'])
+    .service('ListStrandService', ListStrandService)
+    .controller('ListStrandCtrl', ['$scope', '$rootScope', 'ListStrandService', StrandController]);
+
 var strandApp = angular.module('strandApp', ['ngRoute', 'ui.bootstrap', 'mp.colorPicker'])
     .service('StrandService', StrandService)
     .controller('StrandCtrl', ['$scope', '$rootScope', 'StrandService', StrandController]);
-},{"./controllers/CalendarController":2,"./controllers/EventController":3,"./controllers/StrandController":4,"./dependencies/gcal":5,"./services/CalendarService":7,"./services/EventService":8,"./services/StrandService":9,"angular":17,"angular-color-picker":10,"angular-route":12,"angular-ui-bootstrap":13,"angular-ui-calendar":15,"fullcalendar":19}],2:[function(require,module,exports){
+},{"./controllers/CalendarController":2,"./controllers/EventController":3,"./controllers/ListStrandController":4,"./controllers/StrandController":5,"./dependencies/gcal":6,"./services/CalendarService":8,"./services/EventService":9,"./services/ListStrandService":10,"./services/StrandService":11,"angular":19,"angular-color-picker":12,"angular-route":14,"angular-ui-bootstrap":15,"angular-ui-calendar":17,"fullcalendar":21}],2:[function(require,module,exports){
 var CalendarController =   function($scope, $compile, $timeout, uiCalendarConfig, CalendarService) {
     var date = new Date();
     var d = date.getDate();
@@ -251,7 +258,7 @@ var StrandController = function($scope, $rootScope, StrandService){
       $scope.strands = res;
     });
   });
- }
+ };
  $scope.applyAllColor = function(color){
   for (i=0; i < $scope.leds.length; i++){
     ($scope.leds[i]) = color;
@@ -292,6 +299,8 @@ var StrandController = function($scope, $rootScope, StrandService){
 };
 module.exports = StrandController;
 },{}],5:[function(require,module,exports){
+arguments[4][4][0].apply(exports,arguments)
+},{"dup":4}],6:[function(require,module,exports){
 /*!
  * FullCalendar v2.5.0 Google Calendar Plugin
  * Docs & License: http://fullcalendar.io/
@@ -473,14 +482,14 @@ function injectQsComponent(url, component) {
 
 });
 
-},{"jquery":21}],6:[function(require,module,exports){
+},{"jquery":23}],7:[function(require,module,exports){
 var $ = require('jquery');
 window.jQuery = $;
 window.$ = $;
 var bootstrap = require('bootstrap-sass');
 var moment = require('moment');
 window.moment = moment;
-},{"bootstrap-sass":18,"jquery":21,"moment":22}],7:[function(require,module,exports){
+},{"bootstrap-sass":20,"jquery":23,"moment":24}],8:[function(require,module,exports){
 var CalendarService = function($http, $q){
     return {
         'getCalendars': function(){
@@ -513,7 +522,7 @@ var CalendarService = function($http, $q){
     }
 };
 module.exports = CalendarService;
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 var EventService = function($http, $q) {
     return {
       'getEvents': function() {
@@ -546,7 +555,58 @@ var EventService = function($http, $q) {
   }
 };
 module.exports = EventService;
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
+var StrandService = function($http, $q){
+  return {
+    'list': function(){
+      var defer = $q.defer();
+      $http.get('/strand/list').success(function(res){
+        defer.resolve(res);
+      }).error(function(err){
+        defer.reject(err);
+      });
+      return defer.promise
+    },
+    'create': function(){
+      var defer = $q.defer();
+      $http.get('/strand/create').success(function(res){
+        defer.resolve(res);
+      }).error(function(err){
+        defer.reject(err);
+      });
+      return defer.promise
+    },
+    'remove': function(strand){
+      var defer = $q.defer();
+      $http.post('/strand/remove', strand).success(function(res){
+        defer.resolve(res);
+      }).error(function(err){
+        defer.reject(err);
+      });
+      return defer.promise
+    },
+    'getActive': function(){
+      var defer = $q.defer();
+      $http.get('/strand/active').success(function(res){
+        defer.resolve(res);
+      }).error(function(err){
+        defer.reject(err);
+      });
+      return defer.promise
+    },
+    'setActive': function(strand){
+      var defer = $q.defer();
+      $http.post('/stand/active', strand).success(function(res){
+        defer.resolve(res);
+      }).error(function(err){
+        defer.reject(err);
+      });
+      return defer.promise
+    }
+  }
+};
+module.exports = StrandService;
+},{}],11:[function(require,module,exports){
 var StrandService = function($http, $q){
   return {
     'list': function(){
@@ -597,7 +657,7 @@ var StrandService = function($http, $q){
   }
 };
 module.exports = StrandService;
-},{}],10:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         define([ 'module', 'angular' ], function (module, angular) {
@@ -849,7 +909,7 @@ module.exports = StrandService;
     }]);
 }));
 
-},{"angular":17}],11:[function(require,module,exports){
+},{"angular":19}],13:[function(require,module,exports){
 /**
  * @license AngularJS v1.4.8
  * (c) 2010-2015 Google, Inc. http://angularjs.org
@@ -1842,15 +1902,15 @@ function ngViewFillContentFactory($compile, $controller, $route) {
 
 })(window, window.angular);
 
-},{}],12:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 require('./angular-route');
 module.exports = 'ngRoute';
 
-},{"./angular-route":11}],13:[function(require,module,exports){
+},{"./angular-route":13}],15:[function(require,module,exports){
 require('./ui-bootstrap-tpls');
 module.exports = 'ui.bootstrap';
 
-},{"./ui-bootstrap-tpls":14}],14:[function(require,module,exports){
+},{"./ui-bootstrap-tpls":16}],16:[function(require,module,exports){
 /*
  * angular-ui-bootstrap
  * http://angular-ui.github.io/bootstrap/
@@ -10354,7 +10414,7 @@ angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCac
     "");
 }]);
 !angular.$$csp() && angular.element(document).find('head').prepend('<style type="text/css">.ng-animate.item:not(.left):not(.right){-webkit-transition:0s ease-in-out left;transition:0s ease-in-out left}</style>');
-},{}],15:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 /*
 *  AngularJs Fullcalendar Wrapper for the JQuery FullCalendar
 *  API @ http://arshaw.com/fullcalendar/
@@ -10698,7 +10758,7 @@ angular.module('ui.calendar', [])
     };
 }]);
 
-},{}],16:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 /**
  * @license AngularJS v1.4.8
  * (c) 2010-2015 Google, Inc. http://angularjs.org
@@ -39717,11 +39777,11 @@ $provide.value("$locale", {
 })(window, document);
 
 !window.angular.$$csp().noInlineStyle && window.angular.element(document.head).prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style>');
-},{}],17:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 require('./angular');
 module.exports = angular;
 
-},{"./angular":16}],18:[function(require,module,exports){
+},{"./angular":18}],20:[function(require,module,exports){
 /*!
  * Bootstrap v3.3.6 (http://getbootstrap.com)
  * Copyright 2011-2015 Twitter, Inc.
@@ -42086,7 +42146,7 @@ if (typeof jQuery === 'undefined') {
 
 }(jQuery);
 
-},{}],19:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 /*!
  * FullCalendar v2.5.0
  * Docs & License: http://fullcalendar.io/
@@ -53585,7 +53645,7 @@ fcViews.agendaWeek = {
 
 return FC; // export for Node/CommonJS
 });
-},{"jquery":21,"moment":20}],20:[function(require,module,exports){
+},{"jquery":23,"moment":22}],22:[function(require,module,exports){
 //! moment.js
 //! version : 2.10.6
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -56781,7 +56841,7 @@ return FC; // export for Node/CommonJS
     return _moment;
 
 }));
-},{}],21:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.1.4
  * http://jquery.com/
@@ -65993,6 +66053,6 @@ return jQuery;
 
 }));
 
-},{}],22:[function(require,module,exports){
-arguments[4][20][0].apply(exports,arguments)
-},{"dup":20}]},{},[6,1]);
+},{}],24:[function(require,module,exports){
+arguments[4][22][0].apply(exports,arguments)
+},{"dup":22}]},{},[7,1]);

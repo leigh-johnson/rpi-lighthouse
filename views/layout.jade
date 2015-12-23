@@ -10,6 +10,20 @@ html
             // STYLES END
 
     body
+        block nav
+            nav.navbar.navbar-default
+                .container-fluid
+                    .navbar-header
+                        button.fa.fa-bars.navbar-toggle.collapsed(
+                        type='button'
+                        data-toggle='collapse'
+                        data-target='#menu'
+                        aria-expanded='false')
+                    .navbar-collapse#menu
+                        ul.navbar-nav.nav
+                            li(): a(href='/') My Patterns
+                            li(): a(href='/strands/create') Create New
+
         block content
         block scripts
             // SCRIPTS

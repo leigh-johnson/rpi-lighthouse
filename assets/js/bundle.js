@@ -37,36 +37,26 @@ var calendarApp = angular.module('calendarApp', ['ui.calendar', 'ui.bootstrap'])
     .service('CalendarService', CalendarService);
 */
 
-var StrandService = require('./services/StrandService');
-var EditController = require('./controllers/StrandController');
+// Interact with Profile API
 
+var ProfileService = require('./services/ProfileService');
+var EditController = require('./controllers/EditController');
+var CreateController = require('./controllers/CreateController');
 var DashboardController = require('./controllers/DashboardController');
 
 var dashboardApp = angular.module('dashboardApp', ['ngRoute', 'ui.bootstrap'])
-    .service('StrandService', StrandService)
-    .controller('DashboardCtrl', ['$scope', '$rootScope', 'StrandService', DashboardController])
+    .service('ProfileService', ProfileService)
+    .controller('DashboardCtrl', ['$scope', '$rootScope', 'ProfileService', DashboardController])
 
 var createApp = angular.module('strandApp', ['ngRoute', 'ui.bootstrap', 'mp.colorPicker'])
-    .service('StrandService', StrandService)
-    .controller('StrandCtrl', ['$scope', '$rootScope', 'StrandService', StrandController]);
+    .service('ProfileService', ProfileService)
+    .controller('StrandCtrl', ['$scope', '$rootScope', 'ProfileService', EditController]);
 
 var editApp = angular.module('listStrandApp', ['ngRoute', 'ui.bootstrap'])
-    .service('StrandService', StrandService)
-    .controller('ListStrandCtrl', ['$scope', '$rootScope', 'StrandService', StrandController]);
+    .service('ProfileService', ProfileService)
+    .controller('ListStrandCtrl', ['$scope', '$rootScope', 'ProfileService', EditController]);
 
-},{"./controllers/DashboardController":2,"./controllers/StrandController":3,"./services/StrandService":5,"angular":13,"angular-color-picker":6,"angular-route":8,"angular-ui-bootstrap":9,"angular-ui-calendar":11}],2:[function(require,module,exports){
-var DashboardController = function($scope, $rootScope, StrandService){
-  // init routines
-  $scope.init = function(){
-    StrandService.list().then(function(res){
-      $scope.profiles = res;
-    });
-  };
-  $scope.init();
-}
-
-module.exports = DashboardController;
-},{}],3:[function(require,module,exports){
+},{"./controllers/CreateController":2,"./controllers/DashboardController":3,"./controllers/EditController":4,"./services/ProfileService":6,"angular":14,"angular-color-picker":7,"angular-route":9,"angular-ui-bootstrap":10,"angular-ui-calendar":12}],2:[function(require,module,exports){
 var StrandController = function($scope, $rootScope, StrandService){
  $scope.init = function(){
   StrandService.list().then(function(res){
@@ -166,37 +156,146 @@ var StrandController = function($scope, $rootScope, StrandService){
  }
 };
 module.exports = StrandController;
+},{}],3:[function(require,module,exports){
+var DashboardController = function($scope, $rootScope, StrandService){
+  // init routines
+  $scope.init = function(){
+    StrandService.list().then(function(res){
+      $scope.profiles = res;
+    });
+  };
+  $scope.init();
+}
+
+module.exports = DashboardController;
 },{}],4:[function(require,module,exports){
+var EditController = function($scope, $rootScope, StrandService){
+ $scope.init = function(){
+  StrandService.list().then(function(res){
+    $scope.strands = res;
+  });
+ // current working model
+ //$scope.strands.active = {};
+ $scope.numLEDs = 30;
+ // @todo  1d matrix (for now...)
+ $scope.leds = [];
+ $scope.activeLED = 0;
+
+ // selected pattern
+ $scope.pattern = 'solid';
+ // pattern dictionary
+ $scope.patterns = {
+  'solid' : {
+    displayName: 'Solid',
+    'description': 'Choose a solid color for each bulb'
+  },
+  'gradient' : { 
+    displayName: 'gradient',
+    'description' : 'Set gradient stops along the strand',
+    'disabled': true
+  },
+  'rainbow': {
+    displayName: 'Rainbow',
+    'description' : 'Rainbow gradient preset',
+    'disabled': true
+  }
+ };
+  for (i=0; i < $scope.numLEDs; i++){
+  $scope.leds[i] ='#3498db';
+  }
+ };
+
+ $scope.init();
+
+ StrandService.getActive().then(function(res){
+    $scope.activeStrand = res;
+    //console.log(typeof $scope.activeStrand)
+ });
+ $scope.create = function(){
+   strand = {};
+   strand.leds = $scope.leds;
+   strand.numLEDs = $scope.numLEDs;
+   strand.pattern = $scope.pattern;
+   StrandService.create(strand).then(function(res){
+    console.log(res);
+    $scope.init();
+   });
+ };
+ $scope.remove = function(strand){
+  StrandService.remove(strand).then(function(res){
+      console.log(res);
+    });
+ };
+ $scope.applyAllColor = function(color){
+  for (i=0; i < $scope.leds.length; i++){
+    ($scope.leds[i]) = color;
+  }
+  return
+ };
+ $scope.setActiveLED = function(index){
+  $scope.activeLED = index;
+ }
+ $scope.updateNumLEDs = function(){
+  if ( $scope.leds.length < $scope.numLEDs){
+     diff = $scope.numLEDs - $scope.leds.length ;
+    // init empty led objects in numLEDs array
+    for (i=0; i < diff; i++){
+        obj = {};
+        $scope.leds.push(obj);
+      }
+  }
+  else {
+      $scope.leds.length = $scope.numLEDs;
+  }
+ };
+
+ $scope.removeStrand = function(){
+  StrandService.removeStrand(strand)(function(res){
+    // splice strand from $scope.strands
+    // or recall list();
+  });
+ };
+ // return current working editStrand model
+ $scope.getEditStrand = function(){
+
+ };
+ // returns existing strand & sets editStrand model
+ $scope.setEditStrand = function(id){
+
+ }
+};
+module.exports = EditController;
+},{}],5:[function(require,module,exports){
 var $ = require('jquery');
 window.jQuery = $;
 window.$ = $;
 var bootstrap = require('bootstrap-sass');
 var moment = require('moment');
 window.moment = moment;
-},{"bootstrap-sass":14,"jquery":15,"moment":16}],5:[function(require,module,exports){
-var StrandService = function($http, $q){
+},{"bootstrap-sass":15,"jquery":16,"moment":17}],6:[function(require,module,exports){
+var ProfileService = function($http, $q){
   return {
     'list': function(){
       var defer = $q.defer();
-      $http.get('/strand/list').success(function(res){
+      $http.get('/profile/list').success(function(res){
         defer.resolve(res);
       }).error(function(err){
         defer.reject(err);
       });
       return defer.promise
     },
-    'create': function(strand){
+    'create': function(profile){
       var defer = $q.defer();
-      $http.post('/strand/create', strand).success(function(res){
+      $http.post('/profile/create', profile).success(function(res){
         defer.resolve(res);
       }).error(function(err){
         defer.reject(err);
       });
       return defer.promise
     },
-    'remove': function(strand){
+    'remove': function(profile){
       var defer = $q.defer();
-      $http.post('/strand/remove', strand).success(function(res){
+      $http.post('/profile/remove', profile).success(function(res){
         defer.resolve(res);
       }).error(function(err){
         defer.reject(err);
@@ -205,16 +304,16 @@ var StrandService = function($http, $q){
     },
     'getActive': function(){
       var defer = $q.defer();
-      $http.get('/strand/active').success(function(res){
+      $http.get('/profile/active').success(function(res){
         defer.resolve(res);
       }).error(function(err){
         defer.reject(err);
       });
       return defer.promise
     },
-    'setActive': function(strand){
+    'setActive': function(profile){
       var defer = $q.defer();
-      $http.post('/stand/active', strand).success(function(res){
+      $http.post('/stand/active', profile).success(function(res){
         defer.resolve(res);
       }).error(function(err){
         defer.reject(err);
@@ -223,8 +322,8 @@ var StrandService = function($http, $q){
     }
   }
 };
-module.exports = StrandService;
-},{}],6:[function(require,module,exports){
+module.exports = ProfileService;
+},{}],7:[function(require,module,exports){
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         define([ 'module', 'angular' ], function (module, angular) {
@@ -476,7 +575,7 @@ module.exports = StrandService;
     }]);
 }));
 
-},{"angular":13}],7:[function(require,module,exports){
+},{"angular":14}],8:[function(require,module,exports){
 /**
  * @license AngularJS v1.4.8
  * (c) 2010-2015 Google, Inc. http://angularjs.org
@@ -1469,15 +1568,15 @@ function ngViewFillContentFactory($compile, $controller, $route) {
 
 })(window, window.angular);
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 require('./angular-route');
 module.exports = 'ngRoute';
 
-},{"./angular-route":7}],9:[function(require,module,exports){
+},{"./angular-route":8}],10:[function(require,module,exports){
 require('./ui-bootstrap-tpls');
 module.exports = 'ui.bootstrap';
 
-},{"./ui-bootstrap-tpls":10}],10:[function(require,module,exports){
+},{"./ui-bootstrap-tpls":11}],11:[function(require,module,exports){
 /*
  * angular-ui-bootstrap
  * http://angular-ui.github.io/bootstrap/
@@ -9981,7 +10080,7 @@ angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCac
     "");
 }]);
 !angular.$$csp() && angular.element(document).find('head').prepend('<style type="text/css">.ng-animate.item:not(.left):not(.right){-webkit-transition:0s ease-in-out left;transition:0s ease-in-out left}</style>');
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 /*
 *  AngularJs Fullcalendar Wrapper for the JQuery FullCalendar
 *  API @ http://arshaw.com/fullcalendar/
@@ -10325,7 +10424,7 @@ angular.module('ui.calendar', [])
     };
 }]);
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 /**
  * @license AngularJS v1.4.8
  * (c) 2010-2015 Google, Inc. http://angularjs.org
@@ -39344,11 +39443,11 @@ $provide.value("$locale", {
 })(window, document);
 
 !window.angular.$$csp().noInlineStyle && window.angular.element(document.head).prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style>');
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 require('./angular');
 module.exports = angular;
 
-},{"./angular":12}],14:[function(require,module,exports){
+},{"./angular":13}],15:[function(require,module,exports){
 /*!
  * Bootstrap v3.3.6 (http://getbootstrap.com)
  * Copyright 2011-2015 Twitter, Inc.
@@ -41713,7 +41812,7 @@ if (typeof jQuery === 'undefined') {
 
 }(jQuery);
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.1.4
  * http://jquery.com/
@@ -50925,7 +51024,7 @@ return jQuery;
 
 }));
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 //! moment.js
 //! version : 2.10.6
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -54121,4 +54220,4 @@ return jQuery;
     return _moment;
 
 }));
-},{}]},{},[4,1]);
+},{}]},{},[5,1]);

@@ -1,4 +1,4 @@
-var StrandController = function($scope, $rootScope, StrandService){
+var EditController = function($scope, $rootScope, StrandService){
  $scope.init = function(){
   StrandService.list().then(function(res){
     $scope.strands = res;
@@ -93,4 +93,4 @@ var StrandController = function($scope, $rootScope, StrandService){
 
  }
 };
-module.exports = StrandController;
+module.exports = EditController;

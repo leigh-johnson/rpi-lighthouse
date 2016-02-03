@@ -1,32 +1,32 @@
 module.exports = {
   list: function(next){
-    Profile.find().exec(function(err, strands){
+    Profile.find().exec(function(err, profiles){
       if(err) throw err;
-      next(strands);
+      next(profiles);
     });
   },
-  create: function(strandVals, next){
-    Profile.create(strandVals).exec(function(err, strand){
+  create: function(profileVals, next){
+    Profile.create(profileVals).exec(function(err, profile){
       if (err) throw err;
-      next(strand)
+      next(profile)
     });
   },
   remove: function(id, next){
-    Profile.destroy({id: id}).exec(function(err, strand){
+    Profile.destroy({id: id}).exec(function(err, profile){
       if (err) throw err;
-      next(strand);
+      next(profile);
     });
   },
-  setActive: function(strand, next){
-    Profile.update({id: strand.id}, {active: true}).exec(function(err, strand){
+  setActive: function(profile, next){
+    Profile.update({id: profile.id}, {active: true}).exec(function(err, profile){
       if (err) throw err;
-      next(strand);
+      next(profile);
     });
   },
   getActive: function(next){
-    Profile.findOne({active: true}).exec(function(err, strand){
+    Profile.findOne({active: true}).exec(function(err, profile){
       if (err) throw err;
-      next(strand);
+      next(profile);
     });
   }
 };

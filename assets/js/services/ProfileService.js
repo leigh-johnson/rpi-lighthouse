@@ -1,26 +1,26 @@
-var StrandService = function($http, $q){
+var ProfileService = function($http, $q){
   return {
     'list': function(){
       var defer = $q.defer();
-      $http.get('/strand/list').success(function(res){
+      $http.get('/profile/list').success(function(res){
         defer.resolve(res);
       }).error(function(err){
         defer.reject(err);
       });
       return defer.promise
     },
-    'create': function(strand){
+    'create': function(profile){
       var defer = $q.defer();
-      $http.post('/strand/create', strand).success(function(res){
+      $http.post('/profile/create', profile).success(function(res){
         defer.resolve(res);
       }).error(function(err){
         defer.reject(err);
       });
       return defer.promise
     },
-    'remove': function(strand){
+    'remove': function(profile){
       var defer = $q.defer();
-      $http.post('/strand/remove', strand).success(function(res){
+      $http.post('/profile/remove', profile).success(function(res){
         defer.resolve(res);
       }).error(function(err){
         defer.reject(err);
@@ -29,16 +29,16 @@ var StrandService = function($http, $q){
     },
     'getActive': function(){
       var defer = $q.defer();
-      $http.get('/strand/active').success(function(res){
+      $http.get('/profile/active').success(function(res){
         defer.resolve(res);
       }).error(function(err){
         defer.reject(err);
       });
       return defer.promise
     },
-    'setActive': function(strand){
+    'setActive': function(profile){
       var defer = $q.defer();
-      $http.post('/stand/active', strand).success(function(res){
+      $http.post('/stand/active', profile).success(function(res){
         defer.resolve(res);
       }).error(function(err){
         defer.reject(err);
@@ -47,4 +47,4 @@ var StrandService = function($http, $q){
     }
   }
 };
-module.exports = StrandService;
+module.exports = ProfileService;

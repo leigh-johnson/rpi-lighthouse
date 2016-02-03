@@ -36,19 +36,21 @@ var calendarApp = angular.module('calendarApp', ['ui.calendar', 'ui.bootstrap'])
     .service('CalendarService', CalendarService);
 */
 
-var StrandService = require('./services/StrandService');
-var EditController = require('./controllers/StrandController');
+// Interact with Profile API
 
+var ProfileService = require('./services/ProfileService');
+var EditController = require('./controllers/EditController');
+var CreateController = require('./controllers/CreateController');
 var DashboardController = require('./controllers/DashboardController');
 
 var dashboardApp = angular.module('dashboardApp', ['ngRoute', 'ui.bootstrap'])
-    .service('StrandService', StrandService)
-    .controller('DashboardCtrl', ['$scope', '$rootScope', 'StrandService', DashboardController])
+    .service('ProfileService', ProfileService)
+    .controller('DashboardCtrl', ['$scope', '$rootScope', 'ProfileService', DashboardController])
 
 var createApp = angular.module('strandApp', ['ngRoute', 'ui.bootstrap', 'mp.colorPicker'])
-    .service('StrandService', StrandService)
-    .controller('StrandCtrl', ['$scope', '$rootScope', 'StrandService', StrandController]);
+    .service('ProfileService', ProfileService)
+    .controller('StrandCtrl', ['$scope', '$rootScope', 'ProfileService', EditController]);
 
 var editApp = angular.module('listStrandApp', ['ngRoute', 'ui.bootstrap'])
-    .service('StrandService', StrandService)
-    .controller('ListStrandCtrl', ['$scope', '$rootScope', 'StrandService', StrandController]);
+    .service('ProfileService', ProfileService)
+    .controller('ListStrandCtrl', ['$scope', '$rootScope', 'ProfileService', EditController]);

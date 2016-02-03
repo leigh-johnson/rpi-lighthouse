@@ -19,9 +19,9 @@ html
                         data-toggle='collapse'
                         data-target='#menu'
                         aria-expanded='false')
-                    .navbar-collapse#menu
+                    .navbar-collapse.collapse#menu(aria-expanded='false')
                         ul.navbar-nav.nav
-                            li(): a(href='/') My Patterns
+                            li(): a(href='/') All Profiles
                             li(): a(href='/strands/create') Create New
 
         block content

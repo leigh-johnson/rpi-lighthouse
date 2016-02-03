@@ -1,7 +1,7 @@
 /**
-* Profile.js
+* Strand.js
 *
-* @description :: A Profile is a preset light pattern of stored LED values
+* @description :: TODO: You might write a short summary of how this model works and what it represents here.
 * @docs        :: http://sailsjs.org/#!documentation/models
 */
 
@@ -9,16 +9,29 @@ module.exports = {
 
   attributes: {
     name: {
-        type: 'string'
+      type: 'string',
+      require: true
+    }
+    numLEDs: {
+      type: 'integer',
+      required: true
     },
     leds: {
-        type: 'collection',
-        via: 'profiles',
-        dominant: true
+      type: 'array',
+      required: true,
     },
-    events: {
-        type: 'collection',
-        via: 'profile'
+    pattern: {
+      type: 'string',
+      enum: ['gradient', 'solid'],
+      defaultsTo: 'solid'
+    },
+    animation: {
+      type: 'string',
+      enum: ['blink', 'loop']
+    },
+    active: {
+      type: 'boolean',
+      defaultsTo: false
     }
   }
 };

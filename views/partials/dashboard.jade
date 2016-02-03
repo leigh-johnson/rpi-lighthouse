@@ -1,0 +1,20 @@
+extends ../layout
+
+append css
+  // append template-specific styles
+append js
+  // append template-specifc javascripts
+block content
+  div(ng-app='dashboardApp'): .container-fluid(ng-controller='DashboardCtrl')
+    .row.jumbotron(ng-repeat='profile in profiles track by $index')
+      .col-xs-12.col-md-10
+        h2 Testing {{profile.name}}
+        span.fa.fa-lightbulb-o.preview-led-sm(
+          ng-repeat='led in profile.leds track by $index'
+          style='color: {{profile.leds[$index]}}')
+      .col-xs-4.col-md-2
+        button.btn.btn-block.btn-primary.fa.fa-play(ng-disabled='strand.active == true')
+      .col-xs-4.col-md-2
+        button.btn.btn-block.btn-warning.fa.fa-edit(ng-click='edit(strand)')
+      .col-xs-4.col-md-2
+        button.btn.btn-block.btn-danger.fa.fa-remove(ng-click='remove(strand)')

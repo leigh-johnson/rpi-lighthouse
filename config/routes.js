@@ -31,23 +31,15 @@ module.exports.routes = {
   * `assets` directory)                                                      *
   *                                                                          *
   ***************************************************************************/
-
-  '/schedule': {
-    //view: 'partials/schedule'
-     view: 'partials/calendar'   
-  },
-  '/schedule/new' : {
-    view: 'partials/event'
-  },
   // Main dashboard
   '/': {
-    view: 'partials/listStrand'
+    view: 'partials/dashboard'
   },
   // CRUD
-  'get /strands/create' : {
-    view: 'partials/createStrand'
+  'get /profile/create' : {
+    view: 'partials/createProfile'
   },
-  'post /strands/create' : 'StrandController.create',
+  'post /profile/create' : 'ProfileController.create',
   'get /strand/edit/:id' : {
     view: '/partials/editStrand'
   },

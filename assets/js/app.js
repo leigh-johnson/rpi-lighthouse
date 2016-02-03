@@ -6,7 +6,7 @@ require('angular-ui-calendar');
 mp.colorPicker = require('angular-color-picker');
 
 'use strict';
-
+/*
 var EventService = require('./services/EventService');
 var EventController = require('./controllers/EventController');
 
@@ -24,7 +24,8 @@ eventApp.config(['$routeProvider',
       caseInsensitiveMatch: true
     })
   }]);
-
+*/
+/*
 require('fullcalendar');
 require('./dependencies/gcal');
 
@@ -33,17 +34,21 @@ var CalendarService = require('./services/CalendarService');
 var calendarApp = angular.module('calendarApp', ['ui.calendar', 'ui.bootstrap'])
     .controller('CalendarCtrl', CalendarController)
     .service('CalendarService', CalendarService);
+*/
 
 var StrandService = require('./services/StrandService');
-var StrandController = require('./controllers/StrandController');
+var EditController = require('./controllers/StrandController');
 
-var ListStrandService = require('./services/ListStrandService');
-var ListStrandController = require('./controllers/ListStrandController');
+var DashboardController = require('./controllers/DashboardController');
 
-var listStrandApp = angular.module('listStrandApp', ['ngRoute', 'ui.bootstrap'])
-    .service('ListStrandService', ListStrandService)
-    .controller('ListStrandCtrl', ['$scope', '$rootScope', 'ListStrandService', StrandController]);
+var dashboardApp = angular.module('dashboardApp', ['ngRoute', 'ui.bootstrap'])
+    .service('StrandService', StrandService)
+    .controller('DashboardCtrl', ['$scope', '$rootScope', 'StrandService', DashboardController])
 
-var strandApp = angular.module('strandApp', ['ngRoute', 'ui.bootstrap', 'mp.colorPicker'])
+var createApp = angular.module('strandApp', ['ngRoute', 'ui.bootstrap', 'mp.colorPicker'])
     .service('StrandService', StrandService)
     .controller('StrandCtrl', ['$scope', '$rootScope', 'StrandService', StrandController]);
+
+var editApp = angular.module('listStrandApp', ['ngRoute', 'ui.bootstrap'])
+    .service('StrandService', StrandService)
+    .controller('ListStrandCtrl', ['$scope', '$rootScope', 'StrandService', StrandController]);

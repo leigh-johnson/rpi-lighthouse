@@ -52,11 +52,8 @@ var StrandController = function($scope, $rootScope, StrandService){
  };
  $scope.remove = function(strand){
   StrandService.remove(strand).then(function(res){
-    StrandService.list().then(function(res){
       console.log(res);
-      $scope.strands = res;
     });
-  });
  };
  $scope.applyAllColor = function(color){
   for (i=0; i < $scope.leds.length; i++){

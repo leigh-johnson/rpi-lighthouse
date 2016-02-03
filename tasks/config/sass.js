@@ -14,7 +14,7 @@ module.exports = function(grunt){
                 ext: '.css'
             }],
             options: {
-                loadPath: ['node_modules/bootstrap-sass/assets/stylesheets', 'node_modules/fullcalendar/dist']
+                loadPath: ['node_modules/bootstrap-sass/assets/stylesheets', 'node_modules/fullcalendar/dist', 'node_modules/bootswatch']
             }
         }
     });

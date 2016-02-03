@@ -30,7 +30,7 @@ var StrandController = function($scope, $rootScope, StrandService){
   }
  };
   for (i=0; i < $scope.numLEDs; i++){
-  $scope.leds[i] ='#3498db';
+  $scope.leds[i] ='#f7f7f7';
   }
  };
 

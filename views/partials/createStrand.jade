@@ -4,8 +4,7 @@ append css
   link(rel="stylesheet" href="/styles/dependencies/angular-color-picker.css")
 block content
   div(ng-app='strandApp')
-    .container(ng-controller='StrandCtrl')
-      .panel
+    .container.panel(ng-controller='StrandCtrl')
         .row
           h1.text-center Create Strand Pattern
         .row
@@ -39,14 +38,14 @@ block content
             a.preview-led-lg(ng-repeat="led in leds track by $index" 
               ng-click='setActiveLED($index)'
               ng-class="{active: $index == activeLED}"
-              style="color: {{leds[$index] || '#3498db'}}"): span.fa.fa-lightbulb-o
+              style="color: {{leds[$index] || '#f7f7f7'}}"): span.fa.fa-lightbulb-o
           .col-md-4
             .row
               h3 Assign LED Color
                 .input-group.col-md-11
                     input.form-control(type="text" 
                     ng-model="leds[activeLED]" 
-                    ng-init="leds[activeLED] = '#f1c40f'")
+                    ng-init="leds[activeLED] = '#9b59b6'")
                     span.input-group-btn: button.btn.btn-primary(
                     type="button"
                     ng-click='applyAllColor(leds[activeLED])')

@@ -1,6 +1,6 @@
-var StrandController = function($scope, $rootScope, StrandService){
+var ProfileController = function($scope, $rootScope, ProfileService){
  $scope.init = function(){
-  StrandService.list().then(function(res){
+  ProfileService.list().then(function(res){
     $scope.strands = res;
   });
  // current working model
@@ -36,23 +36,19 @@ var StrandController = function($scope, $rootScope, StrandService){
 
  $scope.init();
 
- StrandService.getActive().then(function(res){
-    $scope.activeStrand = res;
-    //console.log(typeof $scope.activeStrand)
- });
  $scope.create = function(){
    strand = {};
    strand.leds = $scope.leds;
    strand.numLEDs = $scope.numLEDs;
    strand.pattern = $scope.pattern;
-   StrandService.create(strand).then(function(res){
+   ProfileService.create(strand).then(function(res){
     console.log(res);
     $scope.init();
    });
  };
  $scope.remove = function(strand){
-  StrandService.remove(strand).then(function(res){
-    StrandService.list().then(function(res){
+  ProfileService.remove(strand).then(function(res){
+    ProfileService.list().then(function(res){
       console.log(res);
       $scope.strands = res;
     });
@@ -80,20 +76,5 @@ var StrandController = function($scope, $rootScope, StrandService){
       $scope.leds.length = $scope.numLEDs;
   }
  };
-
- $scope.removeStrand = function(){
-  StrandService.removeStrand(strand)(function(res){
-    // splice strand from $scope.strands
-    // or recall list();
-  });
- };
- // return current working editStrand model
- $scope.getEditStrand = function(){
-
- };
- // returns existing strand & sets editStrand model
- $scope.setEditStrand = function(id){
-
- }
 };
-module.exports = StrandController;
+module.exports = ProfileController;

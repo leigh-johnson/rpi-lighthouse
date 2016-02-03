@@ -40,14 +40,14 @@ module.exports.routes = {
     view: 'partials/createProfile'
   },
   'post /profile/create' : 'ProfileController.create',
-  'get /strand/edit/:id' : {
-    view: '/partials/editStrand'
+  'get /profile/edit/:id' : {
+    view: '/partials/editProfile'
   },
-  'post /strand/edit/:id' : 'StrandController.update',
+  'post /profile/edit/:id' : 'ProfileController.update',
   // GET / POST to /remove/:id are Blueprinted by sails
   
-  'get /strand/active': 'StrandController.getActive',
-  'post /strand/active': 'StrandController.setActive'
+  'get /profile/active': 'ProfileController.getActive',
+  'post /profile/active': 'ProfileController.setActive'
 
   /***************************************************************************
   *                                                                          *

@@ -48,18 +48,18 @@ var dashboardApp = angular.module('dashboardApp', ['ngRoute', 'ui.bootstrap'])
     .service('ProfileService', ProfileService)
     .controller('DashboardCtrl', ['$scope', '$rootScope', 'ProfileService', DashboardController])
 
-var createApp = angular.module('strandApp', ['ngRoute', 'ui.bootstrap', 'mp.colorPicker'])
+var createApp = angular.module('createApp', ['ngRoute', 'ui.bootstrap', 'mp.colorPicker'])
     .service('ProfileService', ProfileService)
-    .controller('StrandCtrl', ['$scope', '$rootScope', 'ProfileService', EditController]);
+    .controller('CreateCtrl', ['$scope', '$rootScope', 'ProfileService', CreateController]);
 
-var editApp = angular.module('listStrandApp', ['ngRoute', 'ui.bootstrap'])
+var editApp = angular.module('editApp', ['ngRoute', 'ui.bootstrap'])
     .service('ProfileService', ProfileService)
     .controller('ListStrandCtrl', ['$scope', '$rootScope', 'ProfileService', EditController]);
 
 },{"./controllers/CreateController":2,"./controllers/DashboardController":3,"./controllers/EditController":4,"./services/ProfileService":6,"angular":14,"angular-color-picker":7,"angular-route":9,"angular-ui-bootstrap":10,"angular-ui-calendar":12}],2:[function(require,module,exports){
-var StrandController = function($scope, $rootScope, StrandService){
+var ProfileController = function($scope, $rootScope, ProfileService){
  $scope.init = function(){
-  StrandService.list().then(function(res){
+  ProfileService.list().then(function(res){
     $scope.strands = res;
   });
  // current working model
@@ -95,23 +95,19 @@ var StrandController = function($scope, $rootScope, StrandService){
 
  $scope.init();
 
- StrandService.getActive().then(function(res){
-    $scope.activeStrand = res;
-    //console.log(typeof $scope.activeStrand)
- });
  $scope.create = function(){
    strand = {};
    strand.leds = $scope.leds;
    strand.numLEDs = $scope.numLEDs;
    strand.pattern = $scope.pattern;
-   StrandService.create(strand).then(function(res){
+   ProfileService.create(strand).then(function(res){
     console.log(res);
     $scope.init();
    });
  };
  $scope.remove = function(strand){
-  StrandService.remove(strand).then(function(res){
-    StrandService.list().then(function(res){
+  ProfileService.remove(strand).then(function(res){
+    ProfileService.list().then(function(res){
       console.log(res);
       $scope.strands = res;
     });
@@ -139,23 +135,8 @@ var StrandController = function($scope, $rootScope, StrandService){
       $scope.leds.length = $scope.numLEDs;
   }
  };
-
- $scope.removeStrand = function(){
-  StrandService.removeStrand(strand)(function(res){
-    // splice strand from $scope.strands
-    // or recall list();
-  });
- };
- // return current working editStrand model
- $scope.getEditStrand = function(){
-
- };
- // returns existing strand & sets editStrand model
- $scope.setEditStrand = function(id){
-
- }
 };
-module.exports = StrandController;
+module.exports = ProfileController;
 },{}],3:[function(require,module,exports){
 var DashboardController = function($scope, $rootScope, StrandService){
   // init routines

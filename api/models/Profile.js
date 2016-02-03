@@ -11,7 +11,7 @@ module.exports = {
     name: {
       type: 'string',
       require: true
-    }
+    },
     numLEDs: {
       type: 'integer',
       required: true

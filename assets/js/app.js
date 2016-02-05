@@ -45,12 +45,12 @@ var DashboardController = require('./controllers/DashboardController');
 
 var dashboardApp = angular.module('dashboardApp', ['ngRoute', 'ui.bootstrap'])
     .service('ProfileService', ProfileService)
-    .controller('DashboardCtrl', ['$scope', '$rootScope', 'ProfileService', DashboardController])
+    .controller('DashboardCtrl', ['$scope', '$rootScope', '$window', 'ProfileService', DashboardController])
 
 var createApp = angular.module('createApp', ['ngRoute', 'ui.bootstrap', 'mp.colorPicker'])
     .service('ProfileService', ProfileService)
     .controller('CreateCtrl', ['$scope', '$rootScope', 'ProfileService', CreateController]);
 
-var editApp = angular.module('editApp', ['ngRoute', 'ui.bootstrap'])
+var editApp = angular.module('editApp', ['ngRoute', 'ui.bootstrap', 'mp.colorPicker'])
     .service('ProfileService', ProfileService)
-    .controller('ListStrandCtrl', ['$scope', '$rootScope', 'ProfileService', EditController]);
+    .controller('EditCtrl', ['$scope', '$rootScope', '$window', 'ProfileService', EditController]);

@@ -5,8 +5,20 @@ module.exports = {
       next(profiles);
     });
   },
+  getOne: function(id, next){
+    Profile.find({id: id}).exec(function(err, profile){
+      if (err) throw err;
+      next(profile);
+    });
+  },
   create: function(profileVals, next){
     Profile.create(profileVals).exec(function(err, profile){
+      if (err) throw err;
+      next(profile)
+    });
+  },
+  update: function(profileVals, next){
+    Profile.update(profileVals).exec(function(err, profile){
       if (err) throw err;
       next(profile)
     });
@@ -17,8 +29,8 @@ module.exports = {
       next(profile);
     });
   },
-  setActive: function(profile, next){
-    Profile.update({id: profile.id}, {active: true}).exec(function(err, profile){
+  setActive: function(id, next){
+    Profile.update({id: id}, {active: true}).exec(function(err, profile){
       if (err) throw err;
       next(profile);
     });

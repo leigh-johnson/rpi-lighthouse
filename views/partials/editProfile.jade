@@ -1,0 +1,66 @@
+extends ../layout
+
+append css
+  // append template-specific styles
+  link(rel="stylesheet" href="/styles/dependencies/angular-color-picker.css")
+  //base(href='/profile/edit')
+append js
+  // append template-specific javascripts
+block content
+  div(ng-app='editApp')
+    .container.panel(ng-controller='EditCtrl')      
+        .row
+          h1.text-center {{profile.name}}
+        .row
+          .col-md-4.col-xs-6
+            .row
+              //.col-md-12
+                h3 Choose a pattern
+                .btn-group(role="group")
+                  button.btn.btn-default(ng-model='pattern'
+                    uib-btn-radio='{{key}}'
+                    ng-repeat="(key, value) in patterns"
+                    ng-disabled='value.disabled == true'
+                    type='button') 
+                    | {{value.displayName}}
+                .label {{value.description}}
+            .row
+              .col-xs-12
+                h3 How many LEDs?
+                .input-group
+                  span.input-group-addon: span.fa.fa-lightbulb-o
+                  input.form-control(type="number" min="1" step="1" ng-model="numLEDs" value="{{numLEDs}}" ng-change="updateNumLEDs()")
+            .row
+              .col-xs-12
+                h3 Assign LED Color
+                color-picker(ng-model="leds[activeLED]")
+            .row
+              .col-xs-12
+                .input-group
+                    input.form-control(type="text" 
+                    ng-model="leds[activeLED]" 
+                    ng-init="leds[activeLED] = '#9b59b6'")
+                    span.input-group-btn: button.btn.btn-primary(
+                    type="button"
+                    ng-click='applyAllColor(leds[activeLED])')
+                      span Apply All
+            //.row
+              .col-md-12
+                h3 Animations @todo
+                .btn-group(role="group")
+                  button.btn.btn-default.disabled(type='button') Interval
+                  button.btn.btn-default.disabled(type='button') Wave
+                  button.btn.btn-default.disabled(type='button') Blink
+          .col-md-8.col-xs-6
+            h3 Preview
+            a.preview-led-lg(ng-repeat="led in leds track by $index" 
+              ng-click='setActiveLED($index)'
+              ng-class="{active: $index == activeLED}"
+              style="color: {{leds[$index] || '#f7f7f7'}}"): span.fa.fa-lightbulb-o
+
+        .row.padding-top
+          .col-md-12
+            .row
+              .col-md-12.col-md-offset
+                button.btn.btn-primary.btn-block.btn-lg(
+                ng-click='update(profile)') Save & Apply

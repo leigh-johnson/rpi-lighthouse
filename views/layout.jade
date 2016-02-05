@@ -14,15 +14,16 @@ html
             nav.navbar.navbar-default
                 .container-fluid
                     .navbar-header
-                        button.fa.fa-bars.navbar-toggle.collapsed(
+                        button.navbar-toggle.collapsed(
                         type='button'
                         data-toggle='collapse'
                         data-target='#menu'
                         aria-expanded='false')
+                            span.fa.fa-bars
                     .navbar-collapse.collapse#menu(aria-expanded='false')
                         ul.navbar-nav.nav
-                            li(): a(href='/') All Profiles
-                            li(): a(href='/strands/create') Create New
+                            li(): a(href='/') View All Profiles
+                            li(): a(href='/strands/create') Create New Profile
 
         block content
         block scripts

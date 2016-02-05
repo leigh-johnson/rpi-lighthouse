@@ -31,23 +31,6 @@ module.exports.routes = {
   * `assets` directory)                                                      *
   *                                                                          *
   ***************************************************************************/
-  // Main dashboard
-  '/': {
-    view: 'partials/dashboard'
-  },
-  // CRUD
-  'get /profile/create' : {
-    view: 'partials/createProfile'
-  },
-  'post /profile/create' : 'ProfileController.create',
-  'get /profile/edit/:id' : {
-    view: '/partials/editProfile'
-  },
-  'post /profile/edit/:id' : 'ProfileController.update',
-  // GET / POST to /remove/:id are Blueprinted by sails
-  
-  'get /profile/active': 'ProfileController.getActive',
-  'post /profile/active': 'ProfileController.setActive'
 
   /***************************************************************************
   *                                                                          *
@@ -58,5 +41,22 @@ module.exports.routes = {
   * for configuration options and examples.                                  *
   *                                                                          *
   ***************************************************************************/
+  // Main dashboard
+  '/': {
+    view: 'partials/dashboard'
+  },
+  // CRUD
+  'get /profile/create' : {
+    view: 'partials/createProfile'
+  },
+  'post /profile/create' : 'ProfileController.create',
+  'get /profile/edit/:id' : {
+    view: 'partials/editProfile'
+  },
+  'post /profile/:id' : 'ProfileController.update',
+  // GET / POST to /remove/:id are Blueprinted by sails
+  
+  'get /profile/active': 'ProfileController.getActive',
+  'post /profile/active': 'ProfileController.setActive',
 
 };

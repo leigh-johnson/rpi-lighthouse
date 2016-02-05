@@ -30,7 +30,7 @@ var ProfileController = function($scope, $rootScope, ProfileService){
   }
  };
   for (i=0; i < $scope.numLEDs; i++){
-  $scope.leds[i] ='#f7f7f7';
+  $scope.leds[i] ='#1e1e1e';
   }
  };
 

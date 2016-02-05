@@ -1,6 +1,7 @@
 extends ../layout
 
 append css
+  // append template-specific styles
   link(rel="stylesheet" href="/styles/dependencies/angular-color-picker.css")
 block content
   div(ng-app='createApp')
@@ -8,7 +9,7 @@ block content
         .row
           h1.text-center Create a New Profile
         .row
-          .col-md-4.col-xs-6
+          .col-md-4.col-xs-12
             .row
               //.col-md-12
                 h3 Choose a pattern
@@ -47,7 +48,7 @@ block content
                   button.btn.btn-default.disabled(type='button') Interval
                   button.btn.btn-default.disabled(type='button') Wave
                   button.btn.btn-default.disabled(type='button') Blink
-          .col-md-8.col-xs-6
+          .col-md-8.col-xs-12
             h3 Preview
             a.preview-led-lg(ng-repeat="led in leds track by $index" 
               ng-click='setActiveLED($index)'
@@ -58,6 +59,5 @@ block content
           .col-md-12
             .row
               .col-md-12.col-md-offset
-                button.btn.btn-success.btn-block.btn-lg(
-                ng-click='create()')
-                  h2 Save & Apply
+                button.btn.btn-primary.btn-block.btn-lg(
+                ng-click='create()') Save & Apply

@@ -12,14 +12,19 @@ module.exports = {
       res.json(profiles);
     });
   },
+  getOne: function(req, res){
+    ProfileService.getOne(function(success){
+      res.json(success)
+    });
+  },
   create: function(req, res){
-    var profileVals = (req.body) ? req.body : undefined
+    var profileVals = (req.body) ? req.body.profile : undefined
     ProfileService.create(profileVals, function(success){
       res.json(success);
     });
   },
   remove: function(req, res){
-    var profileVals = (req.body) ? req.body : undefined
+    var profileVals = (req.body) ? req.body.profile : undefined
     ProfileService.remove(profileVals, function(success){
       res.json(success);
     });

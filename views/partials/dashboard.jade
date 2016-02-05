@@ -13,8 +13,8 @@ block content
           ng-repeat='led in profile.leds track by $index'
           style='color: {{profile.leds[$index]}}')
       .col-xs-4.col-md-2
-        button.btn.btn-block.btn-primary.fa.fa-play(ng-disabled='strand.active == true')
+        button.btn.btn-block.btn-primary.fa.fa-play(ng-disabled='profile.active == true')
       .col-xs-4.col-md-2
-        button.btn.btn-block.btn-warning.fa.fa-edit(ng-click='edit(strand)')
+        button.btn.btn-block.btn-warning.fa.fa-edit(ng-click='edit(profile)')
       .col-xs-4.col-md-2
-        button.btn.btn-block.btn-danger.fa.fa-remove(ng-click='remove(strand)')
+        button.btn.btn-block.btn-danger.fa.fa-remove(ng-click='remove(profile)')

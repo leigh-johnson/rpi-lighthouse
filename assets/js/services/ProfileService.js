@@ -9,6 +9,15 @@ var ProfileService = function($http, $q){
       });
       return defer.promise
     },
+    'getOne': function(profile){
+      var defer = $q.defer();
+      $http.get('/profile/'+profile.id).success(function(res){
+        defer.resolve(res);
+      }).error(function(err){
+        defer.reject(err)
+      });
+        return defer.promise
+    },
     'create': function(profile){
       var defer = $q.defer();
       $http.post('/profile/create', profile).success(function(res){
@@ -38,7 +47,7 @@ var ProfileService = function($http, $q){
     },
     'setActive': function(profile){
       var defer = $q.defer();
-      $http.post('/stand/active', profile).success(function(res){
+      $http.post('/profile/active', profile).success(function(res){
         defer.resolve(res);
       }).error(function(err){
         defer.reject(err);

@@ -46,15 +46,15 @@ var DashboardController = require('./controllers/DashboardController');
 
 var dashboardApp = angular.module('dashboardApp', ['ngRoute', 'ui.bootstrap'])
     .service('ProfileService', ProfileService)
-    .controller('DashboardCtrl', ['$scope', '$rootScope', 'ProfileService', DashboardController])
+    .controller('DashboardCtrl', ['$scope', '$rootScope', '$window', 'ProfileService', DashboardController])
 
 var createApp = angular.module('createApp', ['ngRoute', 'ui.bootstrap', 'mp.colorPicker'])
     .service('ProfileService', ProfileService)
     .controller('CreateCtrl', ['$scope', '$rootScope', 'ProfileService', CreateController]);
 
-var editApp = angular.module('editApp', ['ngRoute', 'ui.bootstrap'])
+var editApp = angular.module('editApp', ['ngRoute', 'ui.bootstrap', 'mp.colorPicker'])
     .service('ProfileService', ProfileService)
-    .controller('ListStrandCtrl', ['$scope', '$rootScope', 'ProfileService', EditController]);
+    .controller('EditCtrl', ['$scope', '$rootScope', '$window', 'ProfileService', EditController]);
 
 },{"./controllers/CreateController":2,"./controllers/DashboardController":3,"./controllers/EditController":4,"./services/ProfileService":6,"angular":14,"angular-color-picker":7,"angular-route":9,"angular-ui-bootstrap":10,"angular-ui-calendar":12}],2:[function(require,module,exports){
 var ProfileController = function($scope, $rootScope, ProfileService){
@@ -89,7 +89,7 @@ var ProfileController = function($scope, $rootScope, ProfileService){
   }
  };
   for (i=0; i < $scope.numLEDs; i++){
-  $scope.leds[i] ='#f7f7f7';
+  $scope.leds[i] ='#1e1e1e';
   }
  };
 
@@ -138,73 +138,88 @@ var ProfileController = function($scope, $rootScope, ProfileService){
 };
 module.exports = ProfileController;
 },{}],3:[function(require,module,exports){
-var DashboardController = function($scope, $rootScope, StrandService){
+var DashboardController = function($scope, $rootScope, $window, ProfileService){
   // init routines
   $scope.init = function(){
-    StrandService.list().then(function(res){
+    ProfileService.list().then(function(res){
       $scope.profiles = res;
     });
   };
   $scope.init();
+
+  $scope.edit = function(profile){
+    $window.location.href = '/profile/edit/'+profile.id;
+  }
+  $scope.remove = function(profile){
+    ProfileService.remove(profile).then(function(res){
+      $scope.init();
+    });
+  }
 }
 
 module.exports = DashboardController;
 },{}],4:[function(require,module,exports){
-var EditController = function($scope, $rootScope, StrandService){
+var EditController = function($scope, $rootScope, $window, ProfileService){
+ 
+  var getProfileId = function($window){
+    var path = $window.location.pathname;
+    path = path.split('/')
+    if (path[path.length - 1] == ''){
+      id = path[path.length - 2]
+    }
+    else{
+      id = path[path.length - 1]
+    }
+    return id
+  };
+
  $scope.init = function(){
-  StrandService.list().then(function(res){
-    $scope.strands = res;
+  var id = getProfileId($window);
+  ProfileService.getOne({id:id}).then(function(res){
+    $scope.profile = res;
+    $scope.leds = res.leds;
+    $scope.numLEDs = res.numLEDs;
+    console.log($scope)
   });
- // current working model
- //$scope.strands.active = {};
- $scope.numLEDs = 30;
- // @todo  1d matrix (for now...)
- $scope.leds = [];
  $scope.activeLED = 0;
 
  // selected pattern
  $scope.pattern = 'solid';
  // pattern dictionary
  $scope.patterns = {
-  'solid' : {
-    displayName: 'Solid',
-    'description': 'Choose a solid color for each bulb'
-  },
-  'gradient' : { 
-    displayName: 'gradient',
-    'description' : 'Set gradient stops along the strand',
-    'disabled': true
-  },
-  'rainbow': {
-    displayName: 'Rainbow',
-    'description' : 'Rainbow gradient preset',
-    'disabled': true
-  }
- };
-  for (i=0; i < $scope.numLEDs; i++){
-  $scope.leds[i] ='#3498db';
-  }
+    'solid' : {
+      displayName: 'Solid',
+      'description': 'Choose a solid color for each bulb'
+    },
+    'gradient' : { 
+      displayName: 'gradient',
+      'description' : 'Set gradient stops along the strand',
+      'disabled': true
+    },
+    'rainbow': {
+      displayName: 'Rainbow',
+      'description' : 'Rainbow gradient preset',
+      'disabled': true
+    }
+  };
  };
 
  $scope.init();
 
- StrandService.getActive().then(function(res){
-    $scope.activeStrand = res;
-    //console.log(typeof $scope.activeStrand)
- });
- $scope.create = function(){
-   strand = {};
-   strand.leds = $scope.leds;
-   strand.numLEDs = $scope.numLEDs;
-   strand.pattern = $scope.pattern;
-   StrandService.create(strand).then(function(res){
+ $scope.update= function(){
+   profile = {};
+   profile.leds = $scope.leds;
+   profile.numLEDs = $scope.numLEDs;
+   profile.pattern = $scope.pattern;
+   ProfileService.update(profile).then(function(res){
     console.log(res);
-    $scope.init();
+    $window.location.href ='/';
    });
  };
- $scope.remove = function(strand){
+ $scope.remove = function(profile){
   StrandService.remove(strand).then(function(res){
       console.log(res);
+      $window.location.href='/';
     });
  };
  $scope.applyAllColor = function(color){
@@ -230,20 +245,12 @@ var EditController = function($scope, $rootScope, StrandService){
   }
  };
 
- $scope.removeStrand = function(){
-  StrandService.removeStrand(strand)(function(res){
+ $scope.removeProfile = function(){
+  ProfileService.removeProfile(profile)(function(res){
     // splice strand from $scope.strands
     // or recall list();
   });
  };
- // return current working editStrand model
- $scope.getEditStrand = function(){
-
- };
- // returns existing strand & sets editStrand model
- $scope.setEditStrand = function(id){
-
- }
 };
 module.exports = EditController;
 },{}],5:[function(require,module,exports){
@@ -264,6 +271,15 @@ var ProfileService = function($http, $q){
         defer.reject(err);
       });
       return defer.promise
+    },
+    'getOne': function(profile){
+      var defer = $q.defer();
+      $http.get('/profile/'+profile.id).success(function(res){
+        defer.resolve(res);
+      }).error(function(err){
+        defer.reject(err)
+      });
+        return defer.promise
     },
     'create': function(profile){
       var defer = $q.defer();
@@ -294,7 +310,7 @@ var ProfileService = function($http, $q){
     },
     'setActive': function(profile){
       var defer = $q.defer();
-      $http.post('/stand/active', profile).success(function(res){
+      $http.post('/profile/active', profile).success(function(res){
         defer.resolve(res);
       }).error(function(err){
         defer.reject(err);

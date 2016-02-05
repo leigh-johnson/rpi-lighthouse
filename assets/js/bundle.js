@@ -57,20 +57,20 @@ var editApp = angular.module('editApp', ['ngRoute', 'ui.bootstrap', 'mp.colorPic
     .controller('EditCtrl', ['$scope', '$rootScope', '$window', 'ProfileService', EditController]);
 
 },{"./controllers/CreateController":2,"./controllers/DashboardController":3,"./controllers/EditController":4,"./services/ProfileService":6,"angular":14,"angular-color-picker":7,"angular-route":9,"angular-ui-bootstrap":10,"angular-ui-calendar":12}],2:[function(require,module,exports){
-var ProfileController = function($scope, $rootScope, ProfileService){
+var CreateController = function($scope, $rootScope, ProfileService){
  $scope.init = function(){
-  ProfileService.list().then(function(res){
-    $scope.strands = res;
-  });
+  $scope.profile = {}
  // current working model
  //$scope.strands.active = {};
- $scope.numLEDs = 30;
+ $scope.profile.numLEDs = 30;
  // @todo  1d matrix (for now...)
- $scope.leds = [];
+ $scope.profile.leds = [];
  $scope.activeLED = 0;
+
 
  // selected pattern
  $scope.pattern = 'solid';
+ /*
  // pattern dictionary
  $scope.patterns = {
   'solid' : {
@@ -88,34 +88,24 @@ var ProfileController = function($scope, $rootScope, ProfileService){
     'disabled': true
   }
  };
-  for (i=0; i < $scope.numLEDs; i++){
-  $scope.leds[i] ='#1e1e1e';
+ */
+  for (i=0; i < $scope.profile.numLEDs; i++){
+  $scope.profile.leds[i] ='#1e1e1e';
   }
  };
 
  $scope.init();
 
  $scope.create = function(){
-   strand = {};
-   strand.leds = $scope.leds;
-   strand.numLEDs = $scope.numLEDs;
-   strand.pattern = $scope.pattern;
-   ProfileService.create(strand).then(function(res){
+  console.log('client: ', $scope.profile)
+   ProfileService.create($scope.profile).then(function(res){
     console.log(res);
     $scope.init();
    });
  };
- $scope.remove = function(strand){
-  ProfileService.remove(strand).then(function(res){
-    ProfileService.list().then(function(res){
-      console.log(res);
-      $scope.strands = res;
-    });
-  });
- };
  $scope.applyAllColor = function(color){
-  for (i=0; i < $scope.leds.length; i++){
-    ($scope.leds[i]) = color;
+  for (i=0; i < $scope.profile.leds.length; i++){
+    ($scope.profile.leds[i]) = color;
   }
   return
  };
@@ -123,20 +113,20 @@ var ProfileController = function($scope, $rootScope, ProfileService){
   $scope.activeLED = index;
  }
  $scope.updateNumLEDs = function(){
-  if ( $scope.leds.length < $scope.numLEDs){
-     diff = $scope.numLEDs - $scope.leds.length ;
+  if ( $scope.profile.leds.length < $scope.profile.numLEDs){
+     diff = $scope.profile.numLEDs - $scope.profile.leds.length ;
     // init empty led objects in numLEDs array
     for (i=0; i < diff; i++){
         obj = {};
-        $scope.leds.push(obj);
+        $scope.profile.leds.push(obj);
       }
   }
   else {
-      $scope.leds.length = $scope.numLEDs;
+      $scope.profile.leds.length = $scope.profile.numLEDs;
   }
  };
 };
-module.exports = ProfileController;
+module.exports = CreateController;
 },{}],3:[function(require,module,exports){
 var DashboardController = function($scope, $rootScope, $window, ProfileService){
   // init routines
@@ -268,6 +258,7 @@ var ProfileService = function($http, $q){
       $http.get('/profile/list').success(function(res){
         defer.resolve(res);
       }).error(function(err){
+        console.log(err)
         defer.reject(err);
       });
       return defer.promise
@@ -277,15 +268,18 @@ var ProfileService = function($http, $q){
       $http.get('/profile/'+profile.id).success(function(res){
         defer.resolve(res);
       }).error(function(err){
+        console.log(err)
         defer.reject(err)
       });
         return defer.promise
     },
     'create': function(profile){
+      console.log('service: ', profile)
       var defer = $q.defer();
-      $http.post('/profile/create', profile).success(function(res){
+      $http.post('/profile', profile).success(function(res){
         defer.resolve(res);
       }).error(function(err){
+        console.log(err)
         defer.reject(err);
       });
       return defer.promise
@@ -295,6 +289,7 @@ var ProfileService = function($http, $q){
       $http.post('/profile/remove', profile).success(function(res){
         defer.resolve(res);
       }).error(function(err){
+        console.log(err)
         defer.reject(err);
       });
       return defer.promise
@@ -304,6 +299,7 @@ var ProfileService = function($http, $q){
       $http.get('/profile/active').success(function(res){
         defer.resolve(res);
       }).error(function(err){
+        console.log(err)
         defer.reject(err);
       });
       return defer.promise

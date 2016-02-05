@@ -5,6 +5,7 @@ var ProfileService = function($http, $q){
       $http.get('/profile/list').success(function(res){
         defer.resolve(res);
       }).error(function(err){
+        console.log(err)
         defer.reject(err);
       });
       return defer.promise
@@ -14,15 +15,18 @@ var ProfileService = function($http, $q){
       $http.get('/profile/'+profile.id).success(function(res){
         defer.resolve(res);
       }).error(function(err){
+        console.log(err)
         defer.reject(err)
       });
         return defer.promise
     },
     'create': function(profile){
+      console.log('service: ', profile)
       var defer = $q.defer();
-      $http.post('/profile/create', profile).success(function(res){
+      $http.post('/profile', profile).success(function(res){
         defer.resolve(res);
       }).error(function(err){
+        console.log(err)
         defer.reject(err);
       });
       return defer.promise
@@ -32,6 +36,7 @@ var ProfileService = function($http, $q){
       $http.post('/profile/remove', profile).success(function(res){
         defer.resolve(res);
       }).error(function(err){
+        console.log(err)
         defer.reject(err);
       });
       return defer.promise
@@ -41,6 +46,7 @@ var ProfileService = function($http, $q){
       $http.get('/profile/active').success(function(res){
         defer.resolve(res);
       }).error(function(err){
+        console.log(err)
         defer.reject(err);
       });
       return defer.promise

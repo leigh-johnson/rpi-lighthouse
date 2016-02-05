@@ -12,8 +12,9 @@ module.exports = {
     });
   },
   create: function(profileVals, next){
+    console.log(profileVals)
     Profile.create(profileVals).exec(function(err, profile){
-      if (err) throw err;
+      if (err) {console.log(err)};
       next(profile)
     });
   },

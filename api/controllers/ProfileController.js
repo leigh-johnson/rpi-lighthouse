@@ -6,7 +6,7 @@
  */
 
 module.exports = {
-  ws281x: require('rpi-ws281x-native'),
+  //ws281x: require('rpi-ws281x-native')
 	list: function(req, res){
     ProfileService.list(function(profiles){
       res.json(profiles);
@@ -18,19 +18,19 @@ module.exports = {
     });
   },
   create: function(req, res){
-    var profileVals = (req.body) ? req.body.profile : undefined
+    var profileVals = (req.body) ? req.body : undefined
     ProfileService.create(profileVals, function(success){
       res.json(success);
     });
   },
   remove: function(req, res){
-    var profileVals = (req.body) ? req.body.profile : undefined
+    var profileVals = (req.body) ? req.body : undefined
     ProfileService.remove(profileVals, function(success){
       res.json(success);
     });
   },
   setActive: function(req, res){
-    var profile = (req.body) ? req.body.profile : undefined
+    var profile = (req.body) ? req.body : undefined
     ProfileService.setActive(profile, function(success){
       console.log(ws281x);
       res.json(success);

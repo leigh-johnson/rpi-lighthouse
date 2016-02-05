@@ -9,6 +9,12 @@ block content
         .row
           h1.text-center Create a New Profile
         .row
+          .col-xs-12
+            h3 Profile Name:
+            .input-group
+              span.input-group-addon: span.fa.fa-tag
+              input.form-control(type='text' ng-model='profile.name' value='MyLightProfile' ng-change='updateName()' placeholder='MyLightProfile')
+        .row
           .col-md-4.col-xs-12
             .row
               //.col-md-12
@@ -23,23 +29,23 @@ block content
                 .label {{value.description}}
             .row
               .col-xs-12
-                h3 How many LEDs?
+                h3 Number of LEDs:
                 .input-group
                   span.input-group-addon: span.fa.fa-lightbulb-o
-                  input.form-control(type="number" min="1" step="1" ng-model="numLEDs" value="{{numLEDs}}" ng-change="updateNumLEDs()")
+                  input.form-control(type="number" min="1" step="1" ng-model="profile.numLEDs" value="{{profile.numLEDs}}" ng-change="updateNumLEDs()")
             .row
               .col-xs-12
-                h3 Assign LED Color
-                color-picker(ng-model="leds[activeLED]")
+                h3 Set each LED color:
+                color-picker(ng-model="profile.leds[activeLED]")
             .row
               .col-xs-12
                 .input-group
                     input.form-control(type="text" 
-                    ng-model="leds[activeLED]" 
-                    ng-init="leds[activeLED] = '#9b59b6'")
+                    ng-model="profile.leds[activeLED]" 
+                    ng-init="profile.leds[activeLED] = '#9b59b6'")
                     span.input-group-btn: button.btn.btn-primary(
                     type="button"
-                    ng-click='applyAllColor(leds[activeLED])')
+                    ng-click='applyAllColor(profile.leds[activeLED])')
                       span Apply All
             //.row
               .col-md-12
@@ -50,10 +56,10 @@ block content
                   button.btn.btn-default.disabled(type='button') Blink
           .col-md-8.col-xs-12
             h3 Preview
-            a.preview-led-lg(ng-repeat="led in leds track by $index" 
+            a.preview-led-lg(ng-repeat="led in profile.leds track by $index" 
               ng-click='setActiveLED($index)'
               ng-class="{active: $index == activeLED}"
-              style="color: {{leds[$index] || '#f7f7f7'}}"): span.fa.fa-lightbulb-o
+              style="color: {{profile.leds[$index] || '#f7f7f7'}}"): span.fa.fa-lightbulb-o
 
         .row.padding-top
           .col-md-12

@@ -10,7 +10,7 @@ module.exports = {
   attributes: {
     name: {
       type: 'string',
-      require: true
+      required: true
     },
     numLEDs: {
       type: 'integer',
@@ -19,15 +19,6 @@ module.exports = {
     leds: {
       type: 'array',
       required: true,
-    },
-    pattern: {
-      type: 'string',
-      enum: ['gradient', 'solid'],
-      defaultsTo: 'solid'
-    },
-    animation: {
-      type: 'string',
-      enum: ['blink', 'loop']
     },
     active: {
       type: 'boolean',

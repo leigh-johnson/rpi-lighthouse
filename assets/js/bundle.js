@@ -3,47 +3,20 @@ var mp = {};
 require('angular');
 require('angular-route');
 require('angular-ui-bootstrap');
-require('angular-ui-calendar');
 mp.colorPicker = require('angular-color-picker');
 
 'use strict';
-/*
-var EventService = require('./services/EventService');
-var EventController = require('./controllers/EventController');
-
-var eventApp = angular.module('eventApp', ['ngRoute', 'ui.bootstrap'])
-    .service('EventService', EventService)
-    .controller('EventCtrl', ['$scope', '$rootScope', 'EventService', EventController]);
-
-eventApp.config(['$routeProvider',
-  function($routeProvider) {
-    $routeProvider.when('/', {
-      templateUrl: '/partials/event',
-      controller: 'EventCtrl'
-    }).otherwise({
-      redirectTo: '/',
-      caseInsensitiveMatch: true
-    })
-  }]);
-*/
-/*
-require('fullcalendar');
-require('./dependencies/gcal');
-
-var CalendarController = require('./controllers/CalendarController');
-var CalendarService = require('./services/CalendarService');
-var calendarApp = angular.module('calendarApp', ['ui.calendar', 'ui.bootstrap'])
-    .controller('CalendarCtrl', CalendarController)
-    .service('CalendarService', CalendarService);
-*/
 
 // Interact with Profile API
-
 var ProfileService = require('./services/ProfileService');
+
+// View Controllers
 var EditController = require('./controllers/EditController');
-var CreateController = require('./controllers/CreateController');
+var CreateControllerVarLEDs = require('./controllers/CreateControllerVarLEDs');
+var CreateControllerLantern = require('./controllers/CreateControllerLantern');
 var DashboardController = require('./controllers/DashboardController');
 
+// App routines
 var dashboardApp = angular.module('dashboardApp', ['ngRoute', 'ui.bootstrap'])
     .service('ProfileService', ProfileService)
     .controller('DashboardCtrl', ['$scope', '$rootScope', '$window', 'ProfileService', DashboardController])
@@ -56,12 +29,132 @@ var editApp = angular.module('editApp', ['ngRoute', 'ui.bootstrap', 'mp.colorPic
     .service('ProfileService', ProfileService)
     .controller('EditCtrl', ['$scope', '$rootScope', '$window', 'ProfileService', EditController]);
 
-},{"./controllers/CreateController":2,"./controllers/DashboardController":3,"./controllers/EditController":4,"./services/ProfileService":6,"angular":14,"angular-color-picker":7,"angular-route":9,"angular-ui-bootstrap":10,"angular-ui-calendar":12}],2:[function(require,module,exports){
+},{"./controllers/CreateControllerLantern":2,"./controllers/CreateControllerVarLEDs":3,"./controllers/DashboardController":4,"./controllers/EditController":5,"./services/ProfileService":7,"angular":14,"angular-color-picker":8,"angular-route":10,"angular-ui-bootstrap":11}],2:[function(require,module,exports){
+// 
+
 var CreateController = function($scope, $rootScope, ProfileService){
  $scope.init = function(){
-  $scope.profile = {}
- // current working model
- //$scope.strands.active = {};
+ $scope.profile = {}
+ $scope.profile.numLEDs = 44;
+ $scope.profile.leds = [];
+ $scope.activeLED = 0;
+ // key of LEDs per lantern
+ // Example Bootstrap UI rows (left to right, top to bottom):
+ /* sm
+  0| |5
+  1| |4
+  2| |3
+*/
+/* md
+  0| |9
+  1| |8
+  2| |7
+  3| |6
+  4  |5
+*/
+/* lg
+  0| |11
+  1| |10
+  2| |9
+  3| |8
+  4| |7
+  5| |6
+*/
+ $scope.lanterns = {
+    0: {
+      size: sm,
+      leds: [0,5,1,4,2,3]
+    },
+    1: {
+      size: md,
+      leds: [6, 15, 7, 14, 8, 13, 9, 12, 10, 11]
+    },    
+    2: {
+      size: lg,
+      leds: [16, 27, 17, 26, 18, 25, 19, 24, 20, 23, 21, 22]
+    },
+    3: {
+      size: md,
+      leds: [28, 37, 29, 36, 30, 35, 31, 34, 32, 33]
+    },
+    4: {
+      size: sm,
+      leds: [38, 43, 39, 42, 40, 41]
+    }
+ };
+
+
+ // selected pattern
+ $scope.pattern = 'solid';
+ /*
+ // pattern dictionary
+ $scope.patterns = {
+  'solid' : {
+    displayName: 'Solid',
+    'description': 'Choose a solid color for each bulb'
+  },
+  'gradient' : { 
+    displayName: 'gradient',
+    'description' : 'Set gradient stops along the strand',
+    'disabled': true
+  },
+  'rainbow': {
+    displayName: 'Rainbow',
+    'description' : 'Rainbow gradient preset',
+    'disabled': true
+  }
+ };
+ */
+  for (i=0; i < $scope.profile.numLEDs; i++){
+  $scope.profile.leds[i] ='#1e1e1e';
+  }
+ };
+
+ $scope.init();
+
+ $scope.create = function(){
+  console.log('client: ', $scope.profile)
+   ProfileService.create($scope.profile).then(function(res){
+    console.log(res);
+    $scope.success();
+   });
+ };
+
+ $scope.success = function(){
+  success = true;
+ }
+ $scope.applyAllColor = function(color){
+  for (i=0; i < $scope.profile.leds.length; i++){
+    ($scope.profile.leds[i]) = color;
+  }
+  return
+ };
+ $scope.setActiveLED = function(index){
+  $scope.activeLED = index;
+ }
+ $scope.updateNumLEDs = function(){
+  if ( $scope.profile.leds.length < $scope.profile.numLEDs){
+     diff = $scope.profile.numLEDs - $scope.profile.leds.length ;
+    // init empty led objects in numLEDs array
+    for (i=0; i < diff; i++){
+        obj = {};
+        $scope.profile.leds.push(obj);
+      }
+  }
+  else {
+      $scope.profile.leds.length = $scope.profile.numLEDs;
+  }
+ };
+};
+module.exports = CreateController;
+},{}],3:[function(require,module,exports){
+// Controller to setup a variable-length string of LEDs
+// This might be useful for animations
+// Or it might be jank
+
+var CreateController = function($scope, $rootScope, ProfileService){
+ $scope.init = function(){
+ $scope.profile = {}
  $scope.profile.numLEDs = 30;
  // @todo  1d matrix (for now...)
  $scope.profile.leds = [];
@@ -100,9 +193,13 @@ var CreateController = function($scope, $rootScope, ProfileService){
   console.log('client: ', $scope.profile)
    ProfileService.create($scope.profile).then(function(res){
     console.log(res);
-    $scope.init();
+    $scope.success();
    });
  };
+
+ $scope.success = function(){
+  success = true;
+ }
  $scope.applyAllColor = function(color){
   for (i=0; i < $scope.profile.leds.length; i++){
     ($scope.profile.leds[i]) = color;
@@ -127,7 +224,7 @@ var CreateController = function($scope, $rootScope, ProfileService){
  };
 };
 module.exports = CreateController;
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 var DashboardController = function($scope, $rootScope, $window, ProfileService){
   // init routines
   $scope.init = function(){
@@ -148,7 +245,7 @@ var DashboardController = function($scope, $rootScope, $window, ProfileService){
 }
 
 module.exports = DashboardController;
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 var EditController = function($scope, $rootScope, $window, ProfileService){
  
   var getProfileId = function($window){
@@ -243,14 +340,14 @@ var EditController = function($scope, $rootScope, $window, ProfileService){
  };
 };
 module.exports = EditController;
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 var $ = require('jquery');
 window.jQuery = $;
 window.$ = $;
 var bootstrap = require('bootstrap-sass');
 var moment = require('moment');
 window.moment = moment;
-},{"bootstrap-sass":15,"jquery":16,"moment":17}],6:[function(require,module,exports){
+},{"bootstrap-sass":15,"jquery":16,"moment":17}],7:[function(require,module,exports){
 var ProfileService = function($http, $q){
   return {
     'list': function(){
@@ -316,7 +413,7 @@ var ProfileService = function($http, $q){
   }
 };
 module.exports = ProfileService;
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         define([ 'module', 'angular' ], function (module, angular) {
@@ -568,7 +665,7 @@ module.exports = ProfileService;
     }]);
 }));
 
-},{"angular":14}],8:[function(require,module,exports){
+},{"angular":14}],9:[function(require,module,exports){
 /**
  * @license AngularJS v1.4.8
  * (c) 2010-2015 Google, Inc. http://angularjs.org
@@ -1561,15 +1658,15 @@ function ngViewFillContentFactory($compile, $controller, $route) {
 
 })(window, window.angular);
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 require('./angular-route');
 module.exports = 'ngRoute';
 
-},{"./angular-route":8}],10:[function(require,module,exports){
+},{"./angular-route":9}],11:[function(require,module,exports){
 require('./ui-bootstrap-tpls');
 module.exports = 'ui.bootstrap';
 
-},{"./ui-bootstrap-tpls":11}],11:[function(require,module,exports){
+},{"./ui-bootstrap-tpls":12}],12:[function(require,module,exports){
 /*
  * angular-ui-bootstrap
  * http://angular-ui.github.io/bootstrap/
@@ -10073,350 +10170,6 @@ angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCac
     "");
 }]);
 !angular.$$csp() && angular.element(document).find('head').prepend('<style type="text/css">.ng-animate.item:not(.left):not(.right){-webkit-transition:0s ease-in-out left;transition:0s ease-in-out left}</style>');
-},{}],12:[function(require,module,exports){
-/*
-*  AngularJs Fullcalendar Wrapper for the JQuery FullCalendar
-*  API @ http://arshaw.com/fullcalendar/
-*
-*  Angular Calendar Directive that takes in the [eventSources] nested array object as the ng-model and watches it deeply changes.
-*       Can also take in multiple event urls as a source object(s) and feed the events per view.
-*       The calendar will watch any eventSource array and update itself when a change is made.
-*
-*/
-
-angular.module('ui.calendar', [])
-  .constant('uiCalendarConfig', {calendars: {}})
-  .controller('uiCalendarCtrl', ['$scope', 
-                                 '$locale', function(
-                                  $scope, 
-                                  $locale){
-
-      var sources = $scope.eventSources,
-          extraEventSignature = $scope.calendarWatchEvent ? $scope.calendarWatchEvent : angular.noop,
-
-          wrapFunctionWithScopeApply = function(functionToWrap){
-              return function(){
-                  // This may happen outside of angular context, so create one if outside.
-
-                  if ($scope.$root.$$phase) {
-                      return functionToWrap.apply(this, arguments);
-                  } else {
-                      var args = arguments;
-                      var self = this;
-                      return $scope.$root.$apply(function(){
-                          return functionToWrap.apply(self, args);
-                      });
-                  }
-              };
-          };
-
-      var eventSerialId = 1;
-      // @return {String} fingerprint of the event object and its properties
-      this.eventFingerprint = function(e) {
-        if (!e._id) {
-          e._id = eventSerialId++;
-        }
-        
-        var extraSignature = extraEventSignature({event: e}) || '';
-        var start = moment.isMoment(e.start) ? e.start.unix() : (e.start ? moment(e.start).unix() : '');
-        var end =   moment.isMoment(e.end)   ? e.end.unix()   : (e.end   ? moment(e.end).unix()   : '');
-        
-        // This extracts all the information we need from the event. http://jsperf.com/angular-calendar-events-fingerprint/3
-        return "" + e._id + (e.id || '') + (e.title || '') + (e.url || '') + start + end +
-          (e.allDay || '') + (e.className || '') + extraSignature;
-      };
-
-      var sourceSerialId = 1, sourceEventsSerialId = 1;
-      // @return {String} fingerprint of the source object and its events array
-      this.sourceFingerprint = function(source) {
-          var fp = '' + (source.__id || (source.__id = sourceSerialId++)),
-              events = angular.isObject(source) && source.events;
-          if (events) {
-              fp = fp + '-' + (events.__id || (events.__id = sourceEventsSerialId++));
-          }
-          return fp;
-      };
-
-      // @return {Array} all events from all sources
-      this.allEvents = function() {
-        // do sources.map(&:events).flatten(), but we don't have flatten
-        var arraySources = [];
-        for (var i = 0, srcLen = sources.length; i < srcLen; i++) {
-          var source = sources[i];
-          if (angular.isArray(source)) {
-            // event source as array
-            arraySources.push(source);
-          } else if(angular.isObject(source) && angular.isArray(source.events)){
-            // event source as object, ie extended form
-            var extEvent = {};
-            for(var key in source){
-              if(key !== '_id' && key !== 'events'){
-                 extEvent[key] = source[key];
-              }
-            }
-            for(var eI = 0;eI < source.events.length;eI++){
-              angular.extend(source.events[eI],extEvent);
-            }
-            arraySources.push(source.events);
-          }
-        }
-        return Array.prototype.concat.apply([], arraySources);
-      };
-
-      // Track changes in array of objects by assigning id tokens to each element and watching the scope for changes in the tokens
-      // @param {Array|Function} arraySource array of objects to watch
-      // @param tokenFn {Function} that returns the token for a given object
-      // @return {Object}
-      //  subscribe: function(scope, function(newTokens, oldTokens))
-      //    called when source has changed. return false to prevent individual callbacks from firing
-      //  onAdded/Removed/Changed:
-      //    when set to a callback, called each item where a respective change is detected
-      this.changeWatcher = function(arraySource, tokenFn) {
-        var self;
-        var getTokens = function() {
-          var array = angular.isFunction(arraySource) ? arraySource() : arraySource;
-          var result = [], token, el;
-          for (var i = 0, n = array.length; i < n; i++) {
-            el = array[i];
-            token = tokenFn(el);
-            map[token] = el;
-            result.push(token);
-          }
-          return result;
-        };
-
-        // @param {Array} a
-        // @param {Array} b
-        // @return {Array} elements in that are in a but not in b
-        // @example
-        //  subtractAsSets([6, 100, 4, 5], [4, 5, 7]) // [6, 100]
-        var subtractAsSets = function(a, b) {
-          var result = [], inB = {}, i, n;
-          for (i = 0, n = b.length; i < n; i++) {
-            inB[b[i]] = true;
-          }
-          for (i = 0, n = a.length; i < n; i++) {
-            if (!inB[a[i]]) {
-              result.push(a[i]);
-            }
-          }
-          return result;
-        };
-
-        // Map objects to tokens and vice-versa
-        var map = {};
-
-        // Compare newTokens to oldTokens and call onAdded, onRemoved, and onChanged handlers for each affected event respectively.
-        var applyChanges = function(newTokens, oldTokens) {
-          var i, n, el, token;
-          var replacedTokens = {};
-          var removedTokens = subtractAsSets(oldTokens, newTokens);
-          for (i = 0, n = removedTokens.length; i < n; i++) {
-            var removedToken = removedTokens[i];
-            el = map[removedToken];
-            delete map[removedToken];
-            var newToken = tokenFn(el);
-            // if the element wasn't removed but simply got a new token, its old token will be different from the current one
-            if (newToken === removedToken) {
-              self.onRemoved(el);
-            } else {
-              replacedTokens[newToken] = removedToken;
-              self.onChanged(el);
-            }
-          }
-
-          var addedTokens = subtractAsSets(newTokens, oldTokens);
-          for (i = 0, n = addedTokens.length; i < n; i++) {
-            token = addedTokens[i];
-            el = map[token];
-            if (!replacedTokens[token]) {
-              self.onAdded(el);
-            }
-          }
-        };
-        return self = {
-          subscribe: function(scope, onArrayChanged) {
-            scope.$watch(getTokens, function(newTokens, oldTokens) {
-              var notify = !(onArrayChanged && onArrayChanged(newTokens, oldTokens) === false);
-              if (notify) {
-                applyChanges(newTokens, oldTokens);
-              }
-            }, true);
-          },
-          onAdded: angular.noop,
-          onChanged: angular.noop,
-          onRemoved: angular.noop
-        };
-      };
-
-      this.getFullCalendarConfig = function(calendarSettings, uiCalendarConfig){
-          var config = {};
-
-          angular.extend(config, uiCalendarConfig);
-          angular.extend(config, calendarSettings);
-
-          angular.forEach(config, function(value,key){
-            if (typeof value === 'function'){
-              config[key] = wrapFunctionWithScopeApply(config[key]);
-            }
-          });
-
-          return config;
-      };
-
-    this.getLocaleConfig = function(fullCalendarConfig) {
-      if (!fullCalendarConfig.lang || fullCalendarConfig.useNgLocale) {
-        // Configure to use locale names by default
-        var tValues = function(data) {
-          // convert {0: "Jan", 1: "Feb", ...} to ["Jan", "Feb", ...]
-          var r, k;
-          r = [];
-          for (k in data) {
-            r[k] = data[k];
-          }
-          return r;
-        };
-        var dtf = $locale.DATETIME_FORMATS;
-        return {
-          monthNames: tValues(dtf.MONTH),
-          monthNamesShort: tValues(dtf.SHORTMONTH),
-          dayNames: tValues(dtf.DAY),
-          dayNamesShort: tValues(dtf.SHORTDAY)
-        };
-      }
-      return {};
-    };
-  }])
-  .directive('uiCalendar', ['uiCalendarConfig', function(uiCalendarConfig) {
-    return {
-      restrict: 'A',
-      scope: {eventSources:'=ngModel',calendarWatchEvent: '&'},
-      controller: 'uiCalendarCtrl',
-      link: function(scope, elm, attrs, controller) {
-
-        var sources = scope.eventSources,
-            sourcesChanged = false,
-            calendar,
-            eventSourcesWatcher = controller.changeWatcher(sources, controller.sourceFingerprint),
-            eventsWatcher = controller.changeWatcher(controller.allEvents, controller.eventFingerprint),
-            options = null;
-
-        function getOptions(){
-          var calendarSettings = attrs.uiCalendar ? scope.$parent.$eval(attrs.uiCalendar) : {},
-              fullCalendarConfig;
-
-          fullCalendarConfig = controller.getFullCalendarConfig(calendarSettings, uiCalendarConfig);
-
-          var localeFullCalendarConfig = controller.getLocaleConfig(fullCalendarConfig);
-          angular.extend(localeFullCalendarConfig, fullCalendarConfig);
-          options = { eventSources: sources };
-          angular.extend(options, localeFullCalendarConfig);
-          //remove calendars from options
-          options.calendars = null;
-
-          var options2 = {};
-          for(var o in options){
-            if(o !== 'eventSources'){
-              options2[o] = options[o];
-            }
-          }
-          return JSON.stringify(options2);
-        }
-
-        scope.destroyCalendar = function(){
-          if(calendar && calendar.fullCalendar){
-            calendar.fullCalendar('destroy');
-          }
-          if(attrs.calendar) {
-            calendar = uiCalendarConfig.calendars[attrs.calendar] = $(elm).html('');
-          } else {
-            calendar = $(elm).html('');
-          }
-        };
-
-        scope.initCalendar = function(){
-          if (!calendar) {
-            calendar = angular.element(elm).html('');
-          }
-          calendar.fullCalendar(options);
-          if(attrs.calendar) {
-            uiCalendarConfig.calendars[attrs.calendar] = calendar;
-          }          
-        };
-        scope.$on('$destroy', function() {
-          scope.destroyCalendar();
-        });
-
-        eventSourcesWatcher.onAdded = function(source) {
-          if (calendar && calendar.fullCalendar) {
-            calendar.fullCalendar(options);
-            if (attrs.calendar) {
-                uiCalendarConfig.calendars[attrs.calendar] = calendar;
-            }
-            calendar.fullCalendar('addEventSource', source);
-            sourcesChanged = true;
-          }
-        };
-
-        eventSourcesWatcher.onRemoved = function(source) {
-          if (calendar && calendar.fullCalendar) {
-            calendar.fullCalendar('removeEventSource', source);
-            sourcesChanged = true;
-          }
-        };
-
-        eventSourcesWatcher.onChanged = function() {
-          if (calendar && calendar.fullCalendar) {
-            calendar.fullCalendar('refetchEvents');
-            sourcesChanged = true;
-          }
-
-        };
-
-        eventsWatcher.onAdded = function(event) {
-          if (calendar && calendar.fullCalendar) {
-            calendar.fullCalendar('renderEvent', event, (event.stick ? true : false));
-          }
-        };
-
-        eventsWatcher.onRemoved = function(event) {
-          if (calendar && calendar.fullCalendar) {
-            calendar.fullCalendar('removeEvents', event._id);
-          }
-        };
-
-        eventsWatcher.onChanged = function(event) {
-          if (calendar && calendar.fullCalendar) {
-            var clientEvents = calendar.fullCalendar('clientEvents', event._id);
-            for (var i = 0; i < clientEvents.length; i++) {
-              var clientEvent = clientEvents[i];
-              clientEvent = angular.extend(clientEvent, event);
-              calendar.fullCalendar('updateEvent', clientEvent);
-            }
-          }
-        };
-
-        eventSourcesWatcher.subscribe(scope);
-        eventsWatcher.subscribe(scope, function() {
-          if (sourcesChanged === true) {
-            sourcesChanged = false;
-            // return false to prevent onAdded/Removed/Changed handlers from firing in this case
-            return false;
-          }
-        });
-
-        scope.$watch(getOptions, function(newValue, oldValue) {
-          if(newValue !== oldValue) {
-            scope.destroyCalendar();
-            scope.initCalendar();
-          } else if((newValue && angular.isUndefined(calendar))) {
-            scope.initCalendar();
-          }
-        });
-      }
-    };
-}]);
-
 },{}],13:[function(require,module,exports){
 /**
  * @license AngularJS v1.4.8
@@ -54213,4 +53966,4 @@ return jQuery;
     return _moment;
 
 }));
-},{}]},{},[5,1]);
+},{}]},{},[6,1]);

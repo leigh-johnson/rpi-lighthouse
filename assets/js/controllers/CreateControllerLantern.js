@@ -1,12 +1,55 @@
+// 
+
 var CreateController = function($scope, $rootScope, ProfileService){
  $scope.init = function(){
-  $scope.profile = {}
- // current working model
- //$scope.strands.active = {};
- $scope.profile.numLEDs = 30;
- // @todo  1d matrix (for now...)
+ $scope.profile = {}
+ $scope.profile.numLEDs = 44;
  $scope.profile.leds = [];
  $scope.activeLED = 0;
+ // key of LEDs per lantern
+ // Example Bootstrap UI rows (left to right, top to bottom):
+ /* sm
+  0| |5
+  1| |4
+  2| |3
+*/
+/* md
+  0| |9
+  1| |8
+  2| |7
+  3| |6
+  4  |5
+*/
+/* lg
+  0| |11
+  1| |10
+  2| |9
+  3| |8
+  4| |7
+  5| |6
+*/
+ $scope.lanterns = {
+    0: {
+      size: sm,
+      leds: [0,5,1,4,2,3]
+    },
+    1: {
+      size: md,
+      leds: [6, 15, 7, 14, 8, 13, 9, 12, 10, 11]
+    },    
+    2: {
+      size: lg,
+      leds: [16, 27, 17, 26, 18, 25, 19, 24, 20, 23, 21, 22]
+    },
+    3: {
+      size: md,
+      leds: [28, 37, 29, 36, 30, 35, 31, 34, 32, 33]
+    },
+    4: {
+      size: sm,
+      leds: [38, 43, 39, 42, 40, 41]
+    }
+ };
 
 
  // selected pattern
@@ -41,9 +84,13 @@ var CreateController = function($scope, $rootScope, ProfileService){
   console.log('client: ', $scope.profile)
    ProfileService.create($scope.profile).then(function(res){
     console.log(res);
-    $scope.init();
+    $scope.success();
    });
  };
+
+ $scope.success = function(){
+  success = true;
+ }
  $scope.applyAllColor = function(color){
   for (i=0; i < $scope.profile.leds.length; i++){
     ($scope.profile.leds[i]) = color;

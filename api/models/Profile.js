@@ -14,7 +14,8 @@ module.exports = {
     },
     numLEDs: {
       type: 'integer',
-      required: true
+      required: true,
+      defaultsTo: 44
     },
     leds: {
       type: 'array',

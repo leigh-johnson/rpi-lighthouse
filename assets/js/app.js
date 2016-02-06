@@ -2,47 +2,20 @@ var mp = {};
 require('angular');
 require('angular-route');
 require('angular-ui-bootstrap');
-require('angular-ui-calendar');
 mp.colorPicker = require('angular-color-picker');
 
 'use strict';
-/*
-var EventService = require('./services/EventService');
-var EventController = require('./controllers/EventController');
-
-var eventApp = angular.module('eventApp', ['ngRoute', 'ui.bootstrap'])
-    .service('EventService', EventService)
-    .controller('EventCtrl', ['$scope', '$rootScope', 'EventService', EventController]);
-
-eventApp.config(['$routeProvider',
-  function($routeProvider) {
-    $routeProvider.when('/', {
-      templateUrl: '/partials/event',
-      controller: 'EventCtrl'
-    }).otherwise({
-      redirectTo: '/',
-      caseInsensitiveMatch: true
-    })
-  }]);
-*/
-/*
-require('fullcalendar');
-require('./dependencies/gcal');
-
-var CalendarController = require('./controllers/CalendarController');
-var CalendarService = require('./services/CalendarService');
-var calendarApp = angular.module('calendarApp', ['ui.calendar', 'ui.bootstrap'])
-    .controller('CalendarCtrl', CalendarController)
-    .service('CalendarService', CalendarService);
-*/
 
 // Interact with Profile API
-
 var ProfileService = require('./services/ProfileService');
+
+// View Controllers
 var EditController = require('./controllers/EditController');
-var CreateController = require('./controllers/CreateController');
+var CreateControllerVarLEDs = require('./controllers/CreateControllerVarLEDs');
+var CreateControllerLantern = require('./controllers/CreateControllerLantern');
 var DashboardController = require('./controllers/DashboardController');
 
+// App routines
 var dashboardApp = angular.module('dashboardApp', ['ngRoute', 'ui.bootstrap'])
     .service('ProfileService', ProfileService)
     .controller('DashboardCtrl', ['$scope', '$rootScope', '$window', 'ProfileService', DashboardController])

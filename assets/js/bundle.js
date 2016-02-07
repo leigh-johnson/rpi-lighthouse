@@ -257,11 +257,103 @@ var DashboardController = function($scope, $rootScope, $window, ProfileService){
 
 module.exports = DashboardController;
 },{}],5:[function(require,module,exports){
-var EditController = function(){
+var EditControllerLantern = function($scope, $rootScope, $window, ProfileService){
+   var getProfileId = function($window){
+    var path = $window.location.pathname;
+    path = path.split('/')
+    if (path[path.length - 1] == ''){
+      id = path[path.length - 2]
+    }
+    else{
+      id = path[path.length - 1]
+    }
+    return id
+  };
 
-}
+ $scope.init = function(){
+  $scope.profile = {}
+  var id = getProfileId($window);
+  ProfileService.getOne({id:id}).then(function(res){
+    $scope.profile = res;
+    console.log($scope.profile)
+  });
+ $scope.activeLED = 0;
+ // key of LEDs per lantern
+ // Example Bootstrap UI rows (left to right, top to bottom):
+ /* sm
+  0| |5
+  1| |4
+  2| |3
+*/
+/* md
+  0| |9
+  1| |8
+  2| |7
+  3| |6
+  4  |5
+*/
+/* lg
+  0| |11
+  1| |10
+  2| |9
+  3| |8
+  4| |7
+  5| |6
+*/
+ $scope.lanterns = {
+    0: {
+      label: 'Small Left',
+      size: 'sm',
+      leds: [0,5,1,4,2,3]
+    },
+    1: {
+      label: 'Medium Left',
+      size: 'md',
+      leds: [6, 15, 7, 14, 8, 13, 9, 12, 10, 11]
+    },    
+    2: {
+      label: 'Large Center',
+      size: 'lg',
+      leds: [16, 27, 17, 26, 18, 25, 19, 24, 20, 23, 21, 22]
+    },
+    3: {
+      label: 'Medium Right',
+      size: 'md', 
+      leds: [28, 37, 29, 36, 30, 35, 31, 34, 32, 33]
+    },
+    4: {
+      label: 'Medium Right',
+      size: 'sm', 
+      leds: [38, 43, 39, 42, 40, 41]
+    }
+ };
+};
 
-module.exports = EditController;
+ $scope.init();
+ console.log($scope.profile)
+ $scope.save = function(){
+  console.log('client: ', $scope.profile)
+   ProfileService.update($scope.profile).then(function(res){
+    console.log(res);
+    $scope.success();
+   });
+ };
+
+ $scope.success = function(){
+    console.log($scope.profile)
+ }
+ $scope.applyAllColor = function(color){
+  for (i=0; i < $scope.profile.leds.length; i++){
+    ($scope.profile.leds[i]) = color;
+  }
+  return
+ };
+ $scope.setActiveLED = function(index){
+  $scope.activeLED = index;
+ }
+
+};
+module.exports = EditControllerLantern;
 },{}],6:[function(require,module,exports){
 var EditController = function($scope, $rootScope, $window, ProfileService){
  
@@ -281,9 +373,6 @@ var EditController = function($scope, $rootScope, $window, ProfileService){
   var id = getProfileId($window);
   ProfileService.getOne({id:id}).then(function(res){
     $scope.profile = res;
-    $scope.leds = res.leds;
-    $scope.numLEDs = res.numLEDs;
-    console.log($scope)
   });
  $scope.activeLED = 0;
 
@@ -394,6 +483,15 @@ var ProfileService = function($http, $q){
         defer.resolve(res);
       }).error(function(err){
         console.log(err)
+        defer.reject(err);
+      });
+      return defer.promise
+    },
+    'update': function(profile){
+      var defer = $q.defer();
+      $http.post('/profile/'+profile.id, profile).success(function(res){
+        defer.resolve(res);
+      }).error(function(err){
         defer.reject(err);
       });
       return defer.promise

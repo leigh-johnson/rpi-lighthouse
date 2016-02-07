@@ -16,9 +16,6 @@ var EditController = function($scope, $rootScope, $window, ProfileService){
   var id = getProfileId($window);
   ProfileService.getOne({id:id}).then(function(res){
     $scope.profile = res;
-    $scope.leds = res.leds;
-    $scope.numLEDs = res.numLEDs;
-    console.log($scope)
   });
  $scope.activeLED = 0;
 

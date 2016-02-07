@@ -31,6 +31,15 @@ var ProfileService = function($http, $q){
       });
       return defer.promise
     },
+    'update': function(profile){
+      var defer = $q.defer();
+      $http.post('/profile/'+profile.id, profile).success(function(res){
+        defer.resolve(res);
+      }).error(function(err){
+        defer.reject(err);
+      });
+      return defer.promise
+    },
     'remove': function(profile){
       var defer = $q.defer();
       $http.post('/profile/remove', profile).success(function(res){

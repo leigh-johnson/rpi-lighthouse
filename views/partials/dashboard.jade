@@ -8,7 +8,7 @@ block content
   div(ng-app='dashboardApp'): .container-fluid(ng-controller='DashboardCtrl')
     .row.jumbotron(ng-repeat='profile in profiles track by $index')
       .col-xs-12.col-md-10
-        h2 Testing {{profile.name}}
+        h2 {{profile.name}}
         span.fa.fa-lightbulb-o.preview-led-sm(
           ng-repeat='led in profile.leds track by $index'
           style='color: {{profile.leds[$index]}}')

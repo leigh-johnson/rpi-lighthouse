@@ -1,0 +1,44 @@
+extends ../layout
+
+append css
+  // append template-specific styles
+  link(rel="stylesheet" href="/styles/dependencies/angularjs-color-picker.css")
+append js
+  // append template-specific javascripts
+block content
+  div(ng-app='editApp')
+    .container-fluid.panel(ng-controller='EditCtrl')      
+        .row
+          h1.text-center Edit Profile
+          .input-group.col-xs-6.col-xs-offset-3
+            span.input-group-addon: span.fa.fa-tag
+            input.form-control(type='text' ng-model='profile.name' value='{{profile.name}}')
+
+        br
+        .row
+          .col-xs-12
+            div(ng-repeat='lantern in lanterns')
+              .col-xs-12.well
+                h4.text-center {{lantern.label}}
+                .col-xs-6.preview-led-lg(
+                  ng-repeat='led in lantern.leds'
+                  ng-class='{active: led == activeLED}'
+                  style='color:{{profile.leds[led]}}')
+                    color-picker(
+                    ng-model='profile.leds[led]'
+                    color-picker-format="'hex'"
+                    color-picker-on-change='succss()')
+
+
+       .row.padding-top
+          .col-xs-12.col-sm-4
+              button.btn.btn-primary.btn-block.btn-lg(
+              ng-click='save()') Save
+          .col-xs-12.col-sm-4.col-sm-offset-2
+              button.btn.btn-warning.btn-block.btn-lg(
+              ng-click='init()') Reset
+              br
+          .col-xs-12.col-sm-4.col-sm-offset-2
+              button.btn.btn-danger.btn-block.btn-lg(
+              ng-click='remove()') Remove
+              br

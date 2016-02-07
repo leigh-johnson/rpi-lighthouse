@@ -16,18 +16,19 @@ block content
             .input-group
               span.input-group-addon: span.fa.fa-tag
               input.form-control(type='text' ng-model='profile.name' value='MyLightProfile' ng-change='updateName()' placeholder='MyLightProfile')
+        br
         .row
           .col-xs-12
             div(ng-repeat='lantern in lanterns')
-              .col-xs-6
-                h6.text-center {{lantern.label}}
+              .col-xs-12.well
+                h4.text-center {{lantern.label}}
                 .col-xs-6.preview-led-lg(
                   ng-repeat='led in lantern.leds'
                   ng-class='{active: led == activeLED}'
                   style='color:{{profile.leds[led]}}')
                     color-picker(
                     ng-model='profile.leds[led]'
-                    color-picker-swatch-only="true")
+                    color-picker-format="'hex'")
                 //a.preview-led-lg(ng-repeat="led in profile.leds track by $index" 
                   ng-click='setActiveLED($index)'
                   ng-class="{active: $index == activeLED}"

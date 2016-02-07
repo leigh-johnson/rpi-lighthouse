@@ -3,7 +3,6 @@
 var CreateControllerLantern = function($scope, $rootScope, ProfileService){
  $scope.init = function(){
  // color picker defaults
- $scop = true;
  $scope.profile = {}
  $scope.profile.numLEDs = 44;
  $scope.profile.leds = [];

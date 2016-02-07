@@ -9,12 +9,12 @@ module.exports = function(grunt){
             files: [{
                 expand: true,
                 cwd: 'assets/styles/',
-                src: ['importer.scss'],
+                src: ['importer.scss', 'dependencies/angularjs-color-picker.scss'],
                 dest: '.tmp/public/styles/',
                 ext: '.css'
             }],
             options: {
-                loadPath: ['node_modules/bootstrap-sass/assets/stylesheets', 'node_modules/fullcalendar/dist', 'node_modules/bootswatch']
+                loadPath: ['node_modules/angularjs-color-picker','node_modules/bootstrap-sass/assets/stylesheets', 'node_modules/fullcalendar/dist', 'node_modules/bootswatch']
             }
         }
     });

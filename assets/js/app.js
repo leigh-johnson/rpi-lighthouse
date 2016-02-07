@@ -1,16 +1,21 @@
-var mp = {};
+//var mp = {};
+var color = {};
 require('angular');
 require('angular-route');
 require('angular-ui-bootstrap');
-mp.colorPicker = require('angular-color-picker');
+window.tinycolor = require('tinycolor2');
 
+//mp.colorPicker = require('angular-color-picker');
+color.picker = require('angularjs-color-picker');
 'use strict';
+
 
 // Interact with Profile API
 var ProfileService = require('./services/ProfileService');
 
 // View Controllers
-var EditController = require('./controllers/EditController');
+var EditControllerVarLEDs = require('./controllers/EditControllerVarLEDs');
+var EditControllerLantern = require('./controllers/EditControllerLantern');
 var CreateControllerVarLEDs = require('./controllers/CreateControllerVarLEDs');
 var CreateControllerLantern = require('./controllers/CreateControllerLantern');
 var DashboardController = require('./controllers/DashboardController');
@@ -20,10 +25,10 @@ var dashboardApp = angular.module('dashboardApp', ['ngRoute', 'ui.bootstrap'])
     .service('ProfileService', ProfileService)
     .controller('DashboardCtrl', ['$scope', '$rootScope', '$window', 'ProfileService', DashboardController])
 
-var createApp = angular.module('createApp', ['ngRoute', 'ui.bootstrap', 'mp.colorPicker'])
+var createApp = angular.module('createApp', ['ngRoute', 'ui.bootstrap', 'color.picker'])
     .service('ProfileService', ProfileService)
-    .controller('CreateCtrl', ['$scope', '$rootScope', 'ProfileService', CreateController]);
+    .controller('CreateCtrl', ['$scope', '$rootScope', 'ProfileService', CreateControllerLantern]);
 
-var editApp = angular.module('editApp', ['ngRoute', 'ui.bootstrap', 'mp.colorPicker'])
+var editApp = angular.module('editApp', ['ngRoute', 'ui.bootstrap', 'color.picker'])
     .service('ProfileService', ProfileService)
-    .controller('EditCtrl', ['$scope', '$rootScope', '$window', 'ProfileService', EditController]);
+    .controller('EditCtrl', ['$scope', '$rootScope', '$window', 'ProfileService', EditControllerLantern]);

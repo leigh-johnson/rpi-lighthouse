@@ -1,7 +1,9 @@
 // 
 
-var CreateController = function($scope, $rootScope, ProfileService){
+var CreateControllerLantern = function($scope, $rootScope, ProfileService){
  $scope.init = function(){
+ // color picker defaults
+ $scop = true;
  $scope.profile = {}
  $scope.profile.numLEDs = 44;
  $scope.profile.leds = [];
@@ -30,23 +32,28 @@ var CreateController = function($scope, $rootScope, ProfileService){
 */
  $scope.lanterns = {
     0: {
-      size: sm,
+      label: 'Small Left',
+      size: 'sm',
       leds: [0,5,1,4,2,3]
     },
     1: {
-      size: md,
+      label: 'Medium Left',
+      size: 'md',
       leds: [6, 15, 7, 14, 8, 13, 9, 12, 10, 11]
     },    
     2: {
-      size: lg,
+      label: 'Large Center',
+      size: 'lg',
       leds: [16, 27, 17, 26, 18, 25, 19, 24, 20, 23, 21, 22]
     },
     3: {
-      size: md,
+      label: 'Medium Right',
+      size: 'md', 
       leds: [28, 37, 29, 36, 30, 35, 31, 34, 32, 33]
     },
     4: {
-      size: sm,
+      label: 'Medium Right',
+      size: 'sm', 
       leds: [38, 43, 39, 42, 40, 41]
     }
  };
@@ -114,4 +121,4 @@ var CreateController = function($scope, $rootScope, ProfileService){
   }
  };
 };
-module.exports = CreateController;
+module.exports = CreateControllerLantern;

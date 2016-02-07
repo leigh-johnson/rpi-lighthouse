@@ -2,10 +2,12 @@ extends ../layout
 
 append css
   // append template-specific styles
-  link(rel="stylesheet" href="/styles/dependencies/angular-color-picker.css")
+  link(rel="stylesheet" href="/styles/dependencies/angularjs-color-picker.css")
+//append head-js
+  script(src='/js/dependencies/tinycolor2.js')
 block content
   div(ng-app='createApp')
-    .container.panel(ng-controller='CreateCtrl')
+    .container-fluid.panel(ng-controller='CreateCtrl')
         .row
           h1.text-center Create a New Profile
         .row
@@ -15,50 +17,22 @@ block content
               span.input-group-addon: span.fa.fa-tag
               input.form-control(type='text' ng-model='profile.name' value='MyLightProfile' ng-change='updateName()' placeholder='MyLightProfile')
         .row
-          .col-md-4.col-xs-12
-            .row
-              //.col-md-12
-                h3 Choose a pattern
-                .btn-group(role="group")
-                  button.btn.btn-default(ng-model='pattern'
-                    uib-btn-radio='{{key}}'
-                    ng-repeat="(key, value) in patterns"
-                    ng-disabled='value.disabled == true'
-                    type='button') 
-                    | {{value.displayName}}
-                .label {{value.description}}
-            .row
-              .col-xs-12
-                h3 Number of LEDs:
-                .input-group
-                  span.input-group-addon: span.fa.fa-lightbulb-o
-                  input.form-control(type="number" min="1" step="1" ng-model="profile.numLEDs" value="{{profile.numLEDs}}" ng-change="updateNumLEDs()")
-            .row
-              .col-xs-12
-                h3 Change a bulb's color:
-                color-picker(ng-model="profile.leds[activeLED]")
-            .row
-              .col-xs-12
-                .input-group
-                    input.form-control(type="text" 
-                    ng-model="profile.leds[activeLED]" 
-                    ng-init="profile.leds[activeLED] = '#9b59b6'")
-                    span.input-group-btn: button.btn.btn-primary(
-                    type="button"
-                    ng-click='applyAllColor(profile.leds[activeLED])')
-                      span Apply All
-            //.row
-              .col-md-12
-                h3 Animations @todo
-                .btn-group(role="group")
-                  button.btn.btn-default.disabled(type='button') Interval
-                  button.btn.btn-default.disabled(type='button') Wave
-                  button.btn.btn-default.disabled(type='button') Blink
-          .col-md-8.col-xs-12
-            a.preview-led-lg(ng-repeat="led in profile.leds track by $index" 
-              ng-click='setActiveLED($index)'
-              ng-class="{active: $index == activeLED}"
-              style="color: {{profile.leds[$index] || '#f7f7f7'}}"): span.fa.fa-lightbulb-o
+          .col-xs-12
+            div(ng-repeat='lantern in lanterns')
+              .col-xs-6
+                h6.text-center {{lantern.label}}
+                .col-xs-6.preview-led-lg(
+                  ng-repeat='led in lantern.leds'
+                  ng-class='{active: led == activeLED}'
+                  style='color:{{profile.leds[led]}}')
+                    color-picker(
+                    ng-model='profile.leds[led]'
+                    color-picker-swatch-only="true")
+                //a.preview-led-lg(ng-repeat="led in profile.leds track by $index" 
+                  ng-click='setActiveLED($index)'
+                  ng-class="{active: $index == activeLED}"
+                  style="color: {{profile.leds[$index] || '#f7f7f7'}}"): span.fa.fa-lightbulb-o
+
 
         .row.padding-top
           .col-xs-12.col-md-4.col-md-offset-2

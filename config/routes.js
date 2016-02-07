@@ -47,11 +47,11 @@ module.exports.routes = {
   },
   // CRUD
   'get /profile/create' : {
-    view: 'partials/createProfile'
+    view: 'partials/createProfileLantern'
   },
   'post /profile/create' : 'ProfileController.create',
   'get /profile/edit/:id' : {
-    view: 'partials/editProfile'
+    view: 'partials/editProfileLantern'
   },
   'post /profile/:id' : 'ProfileController.update',
   // GET / POST to /remove/:id are Blueprinted by sails

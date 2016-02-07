@@ -9,6 +9,7 @@
     "angular-color-picker": "^1.0.10",
     "angular-route": "^1.4.8",
     "angular-ui-bootstrap": "^0.14.3",
+    "angularjs-color-picker": "^0.8.1",
     "bootstrap-sass": "^3.3.6",
     "bootswatch": "^3.3.6",
     "font-awesome": "^4.5.0",
@@ -30,7 +31,8 @@
     "rc": "~0.5.0",
     "rpi-ws281x-native": "^0.8.1",
     "sails": "~0.11.2",
-    "sails-disk": "~0.10.0"
+    "sails-disk": "~0.10.0",
+    "tinycolor2": "^1.3.0"
   },
   "scripts": {
     "debug": "node debug app.js",
